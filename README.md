@@ -1,13 +1,9 @@
-<p align="center">
-    <img alt="Epymetheus" width="80%" src="https://user-images.githubusercontent.com/24503967/103449899-0a16e000-4cf2-11eb-9296-4cce96da9309.png">
-</p>
-
 <h1 align="center">Epymetheus: Multi-asset Backtesting Framework</h1>
 
 [![python versions](https://img.shields.io/pypi/pyversions/epymetheus.svg)](https://pypi.org/project/epymetheus)
 [![version](https://img.shields.io/pypi/v/epymetheus.svg)](https://pypi.org/project/epymetheus)
-[![CI](https://github.com/simaki/epymetheus/workflows/CI/badge.svg)](https://github.com/simaki/epymetheus/actions?query=workflow%3ACI)
-[![codecov](https://codecov.io/gh/simaki/epymetheus/branch/main/graph/badge.svg)](https://codecov.io/gh/simaki/epymetheus)
+[![CI](https://github.com/epymetheus/epymetheus/actions/workflows/ci.yml/badge.svg)](https://github.com/epymetheus/epymetheus/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/epymetheus/epymetheus/branch/main/graph/badge.svg)](https://codecov.io/gh/epymetheus/epymetheus)
 [![dl](https://img.shields.io/pypi/dm/epymetheus)](https://pypi.org/project/epymetheus)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
@@ -31,7 +27,7 @@ It features an intuitive user API that lets analysts try out their trade strateg
     - You can use `pandas.DataFrame` of historical prices as the target of backtesting.
     - You can view the result of backtesting in Pandas format so that you can analyze and plot it using the familiar Pandas methods.
 4. **Full Test Coverage**:
-    - Epymetheus is thoroughly tested by [continuous integration](https://github.com/simaki/epymetheus/actions?query=workflow%3ACI) with 100% code coverage.
+    - Epymetheus is thoroughly tested by [continuous integration](https://github.com/epymetheus/epymetheus/actions?query=workflow%3ACI) with 100% code coverage.
 
 ### Integrations
 
@@ -50,7 +46,7 @@ $ pip install epymetheus
 
 ## How to use
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/simaki/epymetheus/blob/master/examples/readme/readme.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/epymetheus/epymetheus/blob/master/examples/readme/readme.ipynb)
 
 ### Create strategy
 

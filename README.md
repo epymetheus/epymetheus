@@ -1,3 +1,7 @@
+<p align="center">
+    <img alt="Epymetheus" width="80%" src="https://user-images.githubusercontent.com/24503967/116400235-c9287580-a864-11eb-8ee3-799b187f6e7f.png">
+</p>
+
 <h1 align="center">Epymetheus: Multi-asset Backtesting Framework</h1>
 
 [![python versions](https://img.shields.io/pypi/pyversions/epymetheus.svg)](https://pypi.org/project/epymetheus)

@@ -173,17 +173,11 @@ class TestStrategy:
         universe = universe.astype(float)
         # ---
 
-        trades = [
-            trade("A", entry=1, exit=3),
-            trade("B", entry=2, exit=4),
-        ]
+        trades = [trade("A", entry=1, exit=3), trade("B", entry=2, exit=4)]
         strategy = DeterminedStrategy(trades).run(universe)
         wealth = strategy.wealth()
 
-        expected = pd.Series(
-            [0, 0, 1, 3, 4, 4, 4, 4, 4, 4],
-            index=universe.index,
-        )
+        expected = pd.Series([0, 0, 1, 3, 4, 4, 4, 4, 4, 4], index=universe.index)
 
         pd.testing.assert_series_equal(wealth, expected, check_dtype=False)
 

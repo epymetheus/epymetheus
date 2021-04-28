@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "epymetheus"
+version = "0.10.7"
+description = "Multi-asset Backtesting Framework"
+authors = ["Shota Imaki <shota.imaki.0801@gmail.com>"]
+license = "BSD-3-Clause"
+repository = "https://github.com/simaki/epymetheus"
+
+[tool.poetry.dependencies]
+python = "^3.6.13"
+pandas = "^1.0.0"
+numpy = "^1.18.0"
+pandas-datareader = "^0.9.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.2"
+pytest-cov = "^2.11.1"
+matplotlib = "^3.1.2"
+seaborn = "^0.11.1"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
+[tool.black]
+skip-magic-trailing-comma = true
+
+[tool.isort]
+profile = "black"
+force_single_line = true

@@ -1,4 +1,4 @@
-class NoTradeError(RuntimeError):
+class NoTradeWarning(RuntimeWarning):
     pass
 
 

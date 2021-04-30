@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 from .. import ts
-from ..exceptions import NoTradeError
+from ..exceptions import NoTradeWarning
 from ..exceptions import NotRunError
 from ..metrics import metric_from_name
 
@@ -129,7 +129,7 @@ class Strategy(abc.ABC):
                 print(f"\r{i + 1} trades returned: {t} ... ", end="")
             trades.append(t)
         if len(trades) == 0:
-            raise NoTradeError("No trade.")
+            raise NoTradeWarning("No trade was returned.")
         if verbose:
             _time = time() - _begin_time_yield
             print(f"Done. (Runtume: {_time:.4f} sec)")

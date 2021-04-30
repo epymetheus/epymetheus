@@ -102,6 +102,7 @@ jobs:
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v3
       with:
+        author: GitHub Actions <action@github.com>
         commit-message: format
         delete-branch: true
         branch-suffix: short-commit-hash

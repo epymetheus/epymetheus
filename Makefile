@@ -1,8 +1,10 @@
+PROJECT_NAME := epymetheus
+
 install:
 	@poetry install
 
 test:
-	@poetry run pytest --doctest-modules fracdiff
+	@poetry run pytest --doctest-modules $(PROJECT_NAME)
 	@poetry run pytest --doctest-modules tests
 
 lint:

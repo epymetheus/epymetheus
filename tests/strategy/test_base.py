@@ -10,7 +10,7 @@ from epymetheus import ts
 from epymetheus.benchmarks import DeterminedStrategy
 from epymetheus.benchmarks import RandomStrategy
 from epymetheus.datasets import make_randomwalk
-from epymetheus.exceptions import NoTradeError
+from epymetheus.exceptions import NoTradeWarning
 from epymetheus.exceptions import NotRunError
 from epymetheus.metrics import avg_lose
 from epymetheus.metrics import avg_pnl
@@ -91,7 +91,7 @@ class TestStrategy:
     def test_run_notradeerror(self, verbose):
         strategy = create_strategy(lambda universe: [])
         universe = self.universe
-        with pytest.raises(NoTradeError):
+        with pytest.raises(NoTradeWarning):
             strategy.run(universe, verbose=verbose)
 
     def test_run_execution(self):

@@ -10,7 +10,6 @@ def make_randomwalk(
     init_value=1.0,
     dt=1.0,
     drift=0.0,
-    name="RandomWalk",
     bars=None,
     assets=None,
 ) -> pd.DataFrame:
@@ -21,18 +20,23 @@ def make_randomwalk(
 
     Parameters
     ----------
-    - n_steps : int, default 1000
-    - n_assets : int, default 10
-    - volatility : float, default 0.01
-    - name : str, default='RandomWalk'
-    - bars
-    - assets
-    - seed : int
+    n_steps : int, default 1000
+        Number of time steps.
+    n_assets : int, default 10
+        Number of assets.
+    volatility : float, default 0.01
+        Volatility of asset prices.
+    bars : list[str], optional
+        Names of time steps.
+    assets : list[str], optional
+        Names of assets.
+    seed : int
+        Random seed to generate Brownian motion.
 
     Returns
     -------
     universe : pandas.DataFrame
-        DataFrame with random-walking prices.
+        DataFrame with of asset prices that follow Brownian motions.
 
     Examples
     --------

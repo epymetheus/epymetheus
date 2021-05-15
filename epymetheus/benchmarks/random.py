@@ -23,13 +23,13 @@ class RandomStrategy(Strategy):
 
     Parameters
     ----------
-    - n_trades : int, default 10
+    n_trades : int, default 10
         Number of trades to yield.
-    - max_n_assets : int, default 1
+    max_n_assets : int, default 1
         Maximum number of assets in a single trade.
-    - max_lot : 1
+    max_lot : 1
         Maximum value of lots.
-    - min_lot : 1
+    min_lot : 1
         Minimum value of lots.
 
     Examples

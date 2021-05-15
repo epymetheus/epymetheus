@@ -10,7 +10,7 @@ class BuyAndHold(Strategy):
 
     Parameters
     ----------
-    - weight : dict[str, float]
+    weight : dict[str, float]
         Keys are assets to trade.
         Values are value-based weights.
 

@@ -22,9 +22,9 @@ def fetch_usstocks(
 
     Parameters
     ----------
-    - begin_date : str
-    - end_date : str
-    - n_assets : int
+    begin_date : str
+    end_date : str
+    n_assets : int
 
     Returns
     -------

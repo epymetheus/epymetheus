@@ -17,9 +17,9 @@ def create_strategy(f, **params):
 
     Parameters
     ----------
-    - f : callable
+    f : callable
         Function that returns iterable from universe and parameters.
-    - **params
+    **params
         Parameter values.
 
     Examples
@@ -90,10 +90,10 @@ class Strategy(abc.ABC):
 
         Parameters
         ----------
-        - universe : pandas.DataFrame
+        universe : pandas.DataFrame
             Historical price data to apply this strategy.
             The index represents timestamps and the column is the assets.
-        - **params
+        **params
             Parameter values.
 
         Returns
@@ -107,10 +107,10 @@ class Strategy(abc.ABC):
 
         Parameters
         ----------
-        - universe : pandas.DataFrame
+        universe : pandas.DataFrame
             Historical price data to apply this strategy.
             The index represents timestamps and the column is the assets.
-        - verbose : bool, default True
+        verbose : bool, default True
             Verbose mode.
 
         Returns
@@ -159,7 +159,7 @@ class Strategy(abc.ABC):
 
         Parameters
         ----------
-        - metric_name : str
+        metric_name : str
             Metric to evaluate.
 
         Returns
@@ -262,7 +262,7 @@ class Strategy(abc.ABC):
 
         Parameters
         ----------
-        - **params : dict
+        **params : dict
             Strategy parameters.
 
         Returns

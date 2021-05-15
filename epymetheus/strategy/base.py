@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 
 from .. import ts
+from .._utils import print_if_verbose
 from ..exceptions import NoTradeWarning
 from ..exceptions import NotRunError
 from ..metrics import metric_from_name
@@ -125,31 +126,33 @@ class Strategy(abc.ABC):
         _begin_time_yield = time()
         trades = []
         for i, t in enumerate(self(universe, to_list=False) or []):
-            if verbose:
-                print(f"\r{i + 1} trades returned: {t} ... ", end="")
+            print_if_verbose(
+                f"\r{i + 1} trades returned: {t} ... ", end="", verbose=verbose
+            )
             trades.append(t)
         if len(trades) == 0:
             raise NoTradeWarning("No trade was returned.")
-        if verbose:
-            _time = time() - _begin_time_yield
-            print(f"Done. (Runtume: {_time:.4f} sec)")
+        _time = time() - _begin_time_yield
+        print_if_verbose(f"Done. (Runtume: {_time:.4f} sec)", verbose=verbose)
 
         # Execute trades
         _begin_time_execute = time()
         for i, t in enumerate(trades):
-            if verbose:
-                print(f"\r{i + 1} trades executed: {t} ... ", end="")
+            print_if_verbose(
+                f"\r{i + 1} trades executed: {t} ... ", end="", verbose=verbose
+            )
             t.execute(universe)
-        if verbose:
-            _time = time() - _begin_time_execute
-            print(f"Done. (Runtime: {_time:.4f} sec)")
+        _time = time() - _begin_time_execute
+        print_if_verbose(f"Done. (Runtime: {_time:.4f} sec)", verbose=verbose)
 
         self.trades = trades
 
-        if verbose:
-            _time = time() - _begin_time
-            final_wealth = self.score("final_wealth")
-            print(f"Done. Final wealth: {final_wealth:.2f} (Runtime: {_time:.4f} sec)")
+        _time = time() - _begin_time
+        final_wealth = self.score("final_wealth")
+        print_if_verbose(
+            f"Done. Final wealth: {final_wealth:.2f} (Runtime: {_time:.4f} sec)",
+            verbose=verbose,
+        )
 
         return self
 

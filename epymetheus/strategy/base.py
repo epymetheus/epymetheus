@@ -306,8 +306,3 @@ class Strategy(abc.ABC):
             return f"strategy({fname}{param})"
         else:
             return self.__class__.__name__
-
-    def evaluate(self, metric):
-        raise DeprecationWarning(
-            "Strategy.evaluate(...) is deprecated. Use Strategy.score(...) instead."
-        )

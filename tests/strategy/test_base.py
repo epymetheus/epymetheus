@@ -221,14 +221,6 @@ class TestStrategy:
         with pytest.raises(NotRunError):
             strategy.score(metric)
 
-    def test_score_deprecation_warning(self):
-        """
-        `strategy.evaluate` is deprecated
-        """
-        strategy = create_strategy(self.my_strategy, param_1=1.0, param_2=2.0)
-        with pytest.raises(DeprecationWarning):
-            strategy.evaluate(None)
-
     def test_repr(self):
         strategy = create_strategy(my_func, param_1=1.0, param_2=2.0)
         assert repr(strategy) == "strategy(my_func, param_1=1.0, param_2=2.0)"

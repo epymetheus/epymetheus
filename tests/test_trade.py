@@ -57,12 +57,6 @@ class TestTrade:
         assert t.asset.shape == (2,)
         assert t.lot.shape == (2,)
 
-    def test_init_deprecation(self):
-        with pytest.raises(DeprecationWarning):
-            trade("A", open_bar=0)
-        with pytest.raises(DeprecationWarning):
-            trade("A", shut_bar=0)
-
     def test_repr(self):
         t = trade("A")
         assert repr(t) == "trade(['A'], lot=[1.])"

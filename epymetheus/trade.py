@@ -1,6 +1,7 @@
 from copy import deepcopy
 
 import numpy as np
+import pandas as pd
 
 from epymetheus.universe import Universe
 
@@ -248,6 +249,32 @@ class Trade:
         final_pnl = pnl[-1]
 
         return final_pnl
+
+    @classmethod
+    def load_history(cls, history: pd.DataFrame):
+        """
+        Load trades from a DataFrame of history.
+
+        Parameters
+        ----------
+        history : pd.DataFrame
+
+        Returns
+        -------
+        trades : list[Trade]
+        """
+        trades = []
+        for trade_id in history.trade_id.unique().tolist():
+            h = history[history.trade_id == trade_id]
+            kwargs = {}
+            kwargs["asset"] = h.asset.values
+            kwargs["lot"] = h.lot.values
+            kwargs["entry"] = h.entry.values[0]
+            kwargs["exit"] = h.exit.values[0]
+            kwargs["take"] = h.loc[:, "take"].values[0]  # pd.Series has `take` method
+            kwargs["stop"] = h.stop.values[0]
+            trades.append(cls(**kwargs))
+        return trades
 
     def __eq__(self, other):
         def eq(t0, t1, attr):

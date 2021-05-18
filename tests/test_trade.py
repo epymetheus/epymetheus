@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from epymetheus import Trade
 from epymetheus import trade
 from epymetheus.benchmarks import RandomStrategy
 from epymetheus.datasets import make_randomwalk
@@ -165,6 +166,25 @@ class TestTrade:
         expected = a * t0.final_pnl(universe)
 
         assert np.allclose(result, expected)
+
+    def test_load_history(self):
+        history = pd.DataFrame(
+            {
+                "trade_id": [0, 0, 1],
+                "asset": [0, 1, 2],
+                "lot": [1, 2, 3],
+                "entry": [0, 0, 1],
+                "close": [0, 0, 1],
+                "exit": [100, 100, 101],
+                "take": [10, 10, 11],
+                "stop": [-10, -10, -11],
+            }
+        )
+        trades = Trade.load_history(history)
+        assert trades == [
+            trade([0, 1], lot=[1, 2], entry=0, exit=100, take=10, stop=-10),
+            trade(2, lot=3, entry=1, exit=101, take=11, stop=-11),
+        ]
 
     def test_eq(self):
         t = trade("A")

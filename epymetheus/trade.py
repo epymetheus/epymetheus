@@ -81,8 +81,6 @@ class Trade:
         take=None,
         stop=None,
         lot=1.0,
-        open_bar=None,
-        shut_bar=None,
     ):
         # Convert to np.array
         asset = np.asarray(asset).reshape(-1)

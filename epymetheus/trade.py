@@ -73,15 +73,7 @@ class Trade:
         It is set by the method `self.execute`.
     """
 
-    def __init__(
-        self,
-        asset,
-        entry=None,
-        exit=None,
-        take=None,
-        stop=None,
-        lot=1.0,
-    ):
+    def __init__(self, asset, entry=None, exit=None, take=None, stop=None, lot=1.0):
         # Convert to np.array
         asset = np.asarray(asset).reshape(-1)
         lot = np.broadcast_to(np.asarray(lot), asset.shape)

@@ -6,9 +6,9 @@ import pytest
 from epymetheus import create_strategy
 from epymetheus import trade
 from epymetheus.benchmarks import RandomStrategy
-from epymetheus.strategy.container import StrategyContainer
-from epymetheus.strategy.container import StrategyDict
-from epymetheus.strategy.container import StrategyList
+from epymetheus.strategy import StrategyContainer
+from epymetheus.strategy import StrategyDict
+from epymetheus.strategy import StrategyList
 
 
 class TestStrategyContainer:

@@ -5,9 +5,11 @@ from .base import Strategy
 
 class StrategyContainer(Strategy):
     """
+    Base class of Strategy container.
+
     Attributes
     ----------
-    - _strategies : OrderedDict
+    _strategies : OrderedDict
 
     >>> from epymetheus import trade
     >>> from epymetheus import create_strategy
@@ -58,11 +60,11 @@ class StrategyContainer(Strategy):
 
 class StrategyList(StrategyContainer):
     """
-    Holds strategies in a list.
+    Holds substrategies in a list.
 
     Parameters
     ----------
-    - strategies : iterable of Strategies
+    strategies : iterable of Strategies
 
     Examples
     --------
@@ -111,11 +113,12 @@ class StrategyList(StrategyContainer):
 
 class StrategyDict(StrategyContainer):
     """
-    Holds strategies in a list.
+    Holds substrategies in a dictionary.
 
     Parameters
     ----------
-    - strategies : iterable of Strategies
+    strategies : dict[str, Strategy]
+        A dictionary of (string: Strategy).
 
     Examples
     --------

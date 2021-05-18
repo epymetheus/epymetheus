@@ -11,17 +11,17 @@ def trade(asset, entry=None, exit=None, take=None, stop=None, lot=1.0, **kwargs)
 
     Parameters
     ----------
-    - asset : str or array of str
+    asset : str or array of str
         Name of assets.
-    - entry : object or None, default None
+    entry : object or None, default None
         Datetime of entry.
-    - exit : object or None, default None
+    exit : object or None, default None
         Datetime of exit.
-    - take : float > 0 or None, default None
+    take : float > 0 or None, default None
         Threshold of profit-take.
-    - stop : float < 0 or None, default None
+    stop : float < 0 or None, default None
         Threshold of stop-loss.
-    - lot : float, default 1.0
+    lot : float, default 1.0
         Lot to trade in unit of share.
 
     Returns
@@ -58,17 +58,17 @@ class Trade:
 
     Parameters
     ----------
-    - asset : np.array
+    asset : np.array
         Name of assets.
-    - entry : object or None, default None
+    entry : object or None, default None
         Datetime of entry.
-    - exit : object or None, default None
+    exit : object or None, default None
         Datetime of exit.
-    - take : float > 0 or None, default None
+    take : float > 0 or None, default None
         Threshold of profit-take.
-    - stop : float < 0 or None, default None
+    stop : float < 0 or None, default None
         Threshold of stop-loss.
-    - lot : np.array, default 1.0
+    lot : np.array, default 1.0
         Lot to trade in unit of share.
 
     Attributes

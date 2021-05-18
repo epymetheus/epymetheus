@@ -1,6 +1,3 @@
-from sklearn.utils import indexable
-
-
 def train_test_roll(array, tr_samples, te_samples, roll=None):
     """
     Split arrays or matrices into rolling train and test subsets

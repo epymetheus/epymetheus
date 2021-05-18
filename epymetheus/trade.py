@@ -18,6 +18,10 @@ def trade(asset, entry=None, exit=None, take=None, stop=None, lot=1.0, **kwargs)
         Datetime of exit.
     take : float > 0 or None, default None
         Threshold of profit-take.
+    stop : float < 0 or None, default None
+        Threshold of stop-loss.
+    lot : np.array, default 1.0
+        Lot to trade in unit of share.
 
     Examples
     --------

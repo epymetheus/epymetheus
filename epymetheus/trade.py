@@ -3,8 +3,6 @@ from copy import deepcopy
 import numpy as np
 import pandas as pd
 
-from epymetheus.universe import Universe
-
 
 def trade(asset, entry=None, exit=None, take=None, stop=None, lot=1.0, **kwargs):
     """
@@ -22,12 +20,8 @@ def trade(asset, entry=None, exit=None, take=None, stop=None, lot=1.0, **kwargs)
         Threshold of profit-take.
     stop : float < 0 or None, default None
         Threshold of stop-loss.
-    lot : float, default 1.0
+    lot : np.array, default 1.0
         Lot to trade in unit of share.
-
-    Returns
-    -------
-    trade : Trade
 
     Examples
     --------
@@ -87,16 +81,7 @@ class Trade:
         take=None,
         stop=None,
         lot=1.0,
-        open_bar=None,
-        shut_bar=None,
     ):
-        if open_bar is not None:
-            entry = open_bar if entry is None else entry
-            raise DeprecationWarning("`open_bar` is deprecated. Use `entry` instead.")
-        if shut_bar is not None:
-            exit = shut_bar if exit is None else exit
-            raise DeprecationWarning("`shut_bar` is deprecated. Use `exit` instead.")
-
         # Convert to np.array
         asset = np.asarray(asset).reshape(-1)
         lot = np.broadcast_to(np.asarray(lot), asset.shape)
@@ -145,8 +130,6 @@ class Trade:
         >>> t.close
         3
         """
-        universe = self.__to_dataframe(universe)
-
         entry = universe.index[0] if self.entry is None else self.entry
         exit = universe.index[-1] if self.exit is None else self.exit
 
@@ -209,7 +192,6 @@ class Trade:
                [  8., -18.],
                [ 10., -21.]])
         """
-        universe = self.__to_dataframe(universe)
         array_value = self.lot * universe.loc[:, self.asset].values
         return array_value
 
@@ -236,8 +218,6 @@ class Trade:
         >>> t.final_pnl(universe)
         array([2., 2.])
         """
-        universe = self.__to_dataframe(universe)
-
         i_entry = universe.index.get_indexer([self.entry]).item()
         i_close = universe.index.get_indexer([self.close]).item()
 
@@ -358,8 +338,3 @@ class Trade:
                 params.append(f"{attr}={value}")
 
         return f"trade({', '.join(params)})"
-
-    @staticmethod
-    def __to_dataframe(universe):
-        # Backward compatibility
-        return universe.prices if isinstance(universe, Universe) else universe

@@ -158,6 +158,17 @@ class TestStrategy:
         )
         pd.testing.assert_frame_equal(history, expected, check_dtype=False)
 
+    def test_load(self):
+        np.random.seed(42)
+        universe = make_randomwalk()
+        strategy = RandomStrategy().run(universe)
+        history = strategy.history()
+
+        strategy_load = RandomStrategy().load(history, universe)
+
+        pd.testing.assert_frame_equal(history, strategy_load.history())
+        pd.testing.assert_series_equal(strategy.wealth(), strategy_load.wealth())
+
     def test_history_notrunerror(self):
         strategy = RandomStrategy()
         with pytest.raises(NotRunError):

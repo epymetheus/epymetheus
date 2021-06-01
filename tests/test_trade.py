@@ -1,11 +1,14 @@
+from tabnanny import check
 import numpy as np
 import pandas as pd
 import pytest
+
 
 from epymetheus import Trade
 from epymetheus import trade
 from epymetheus.benchmarks import RandomStrategy
 from epymetheus.datasets import make_randomwalk
+from epymetheus.trade import check_trade
 
 
 class TestTrade:
@@ -268,6 +271,43 @@ class TestTrade:
             ["A", "B"], lot=[1 / a, -2.0 / a], entry=0, exit=1, take=2.0, stop=-3.0
         )
         assert result == expect
+
+
+class TestCheckTrade:
+
+    def test(self):
+        universe = pd.DataFrame({"A": [100, 101, 102]}, index=[0, 1, 2])
+
+        # asset
+        with pytest.raises(ValueError):
+            t = trade("NONEXISTENT_ASSET")
+            check_trade(t, universe)
+
+        # index
+        with pytest.raises(ValueError):
+            t = trade("A", entry=99)
+            check_trade(t, universe)
+        with pytest.raises(ValueError):
+            t = trade("A", entry=0, exit=99)
+            check_trade(t, universe)
+
+        # lot
+        with pytest.raises(ValueError):
+            t = trade("A", lot=[np.nan])
+            check_trade(t, universe)
+        with pytest.raises(ValueError):
+            t = trade("A", lot=[np.inf])
+            check_trade(t, universe)
+
+        # take
+        with pytest.raises(ValueError):
+            t = trade("A", take=-1.0)
+            check_trade(t, universe)
+
+        # stop
+        with pytest.raises(ValueError):
+            t = trade("A", stop=1.0)
+            check_trade(t, universe)
 
 
 # @pytest.mark.parametrize("seed", params_seed)

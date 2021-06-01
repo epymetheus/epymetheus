@@ -330,3 +330,68 @@ class Trade:
                 params.append(f"{attr}={value}")
 
         return f"trade({', '.join(params)})"
+
+
+def check_trade(
+    trade: Trade,
+    universe: pd.DataFrame,
+    check_asset: bool = True,
+    check_index: bool = True,
+    check_lot: bool = True,
+    check_take: bool = True,
+    check_stop: bool = True,
+):
+    """
+    Validation for `Trade`.
+
+    Parameters
+    ----------
+    trade : Trade
+        Trade object to validate.
+    universe : pd.DataFrame
+        Universe (price data) to apply `trade`.
+    check_asset : bool, default=True
+    check_index : bool, default=True
+    check_lot : bool, default=True
+    check_take : bool, default=True
+    check_stop : bool, default=True
+
+    Raises
+    ------
+    ValueError
+        When something is wrong with validation.
+
+    Examples
+    --------
+    >>> import epymetheus as ep
+    >>> from epymetheus.trade import check_trade
+
+    >>> universe = pd.DataFrame({"A": [100, 101, 102]}, index=[0, 1, 2])
+    >>> trade = ep.trade("A", entry=1)
+    >>> check_trade(trade, universe)  # OK
+    """
+    if check_asset:
+        for a in trade.asset:
+            if a not in universe.columns:
+                raise ValueError("asset is not found in index:", a)
+
+    if check_index:
+        if trade.entry not in universe.index:
+            raise ValueError("entry is not found in index:", trade.entry)
+        if getattr(trade, "exit", None) is not None:
+            if trade.exit not in universe.index:
+                raise ValueError("exit is not found in index:", trade.exit)
+
+    if check_lot:
+        if not np.isfinite(trade.lot).all():
+            raise ValueError("lot is not finite:", trade.lot)
+
+    if check_take:
+        if getattr(trade, "take", None) is not None:
+            if trade.take < 0:
+                raise ValueError("take should be nonnegative, got:", trade.take)
+
+    if check_stop:
+        if getattr(trade, "stop", None) is not None:
+            if trade.stop > 0:
+                raise ValueError("stop should be nonpositive, got:", trade.stop)

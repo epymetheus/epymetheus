@@ -11,6 +11,7 @@ from ..exceptions import NoTradeWarning
 from ..exceptions import NotRunError
 from ..metrics import metric_from_name
 from ..trade import Trade
+from ..trade import check_trade
 
 
 def create_strategy(f, **params):
@@ -103,7 +104,7 @@ class Strategy(abc.ABC):
         trades : iterable of trades
         """
 
-    def run(self, universe, verbose=True):
+    def run(self, universe, verbose=True, check_trades=False):
         """
         Run a backtesting of strategy.
 
@@ -112,8 +113,10 @@ class Strategy(abc.ABC):
         universe : pandas.DataFrame
             Historical price data to apply this strategy.
             The index represents timestamps and the column is the assets.
-        verbose : bool, default True
+        verbose : bool, default=True
             Verbose mode.
+        check_trade : bool, default=False
+            If `True`, check that `asset`, `entry`, `exit` of trade
 
         Returns
         -------
@@ -130,6 +133,8 @@ class Strategy(abc.ABC):
             print_if_verbose(
                 f"\r{i + 1} trades returned: {t} ... ", end="", verbose=verbose
             )
+            if check_trades:
+                check_trade(t, universe)
             trades.append(t)
         if len(trades) == 0:
             raise NoTradeWarning("No trade was returned.")

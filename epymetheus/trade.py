@@ -1,3 +1,4 @@
+import json
 from copy import deepcopy
 
 import numpy as np
@@ -247,6 +248,88 @@ class Trade:
             kwargs["stop"] = h.stop.values[0]
             trades.append(cls(**kwargs))
         return trades
+
+    def to_dict(self) -> dict:
+        """
+        Represents `self` as `dict` object.
+
+        Returns
+        -------
+        trade_as_dict : dict
+
+        Examples
+        --------
+        >>> import epymetheus as ep
+
+        >>> trade = ep.trade("A0", entry=1, exit=6, take=2)
+        >>> trade.to_dict()
+        {'asset': ['A0'], 'entry': 1, 'exit': 6, 'take': 2, 'stop': None, 'lot': [1.0]}
+        """
+        trade_as_dict = dict(
+            asset=self.asset.tolist(),
+            entry=self.entry,
+            exit=self.exit,
+            take=self.take,
+            stop=self.stop,
+            lot=self.lot.tolist(),
+        )
+        if hasattr(self, "close"):
+            trade_as_dict["close"] = self.close
+
+        return trade_as_dict
+
+    def to_json(self) -> str:
+        """
+        Represents `self` as a string in JSON format.
+
+        Returns
+        -------
+        trade_as_json : str
+
+        Examples
+        --------
+        >>> import epymetheus as ep
+
+        >>> trade = ep.trade("A0", entry=1, exit=6, take=2)
+        >>> trade.to_json()
+        '{"asset": ["A0"], "entry": 1, "exit": 6, "take": 2, "stop": null, "lot": [1.0]}'
+
+        >>> s = trade.to_json()
+        >>> ep.Trade.load_json(s)
+        trade(['A0'], lot=[1.], entry=1, exit=6, take=2)
+        """
+        return json.dumps(self.to_dict())
+
+    @classmethod
+    def load_json(cls, s: str) -> object:
+        """
+        Loads JSON and creates a `Trade`.
+
+        Parameters
+        ----------
+        s : str
+            JSON string
+
+        Returns
+        -------
+        trade : Trade
+        """
+        return cls.load_dict(json.loads(s))
+
+    @classmethod
+    def load_dict(cls, d: dict) -> object:
+        """
+        Loads `dict` object and creates a `Trade`.
+
+        Parameters
+        ----------
+        d : dict
+
+        Returns
+        -------
+        trade : Trade
+        """
+        return cls(**d)
 
     def __eq__(self, other):
         def eq(t0, t1, attr):

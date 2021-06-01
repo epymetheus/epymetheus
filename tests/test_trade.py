@@ -145,11 +145,11 @@ class TestTrade:
         universe = pd.DataFrame({"A": range(10)})
 
         with pytest.raises(KeyError):
-            t = trade("NONEXISTENT").execute(universe)
+            _ = trade("NONEXISTENT").execute(universe)
         with pytest.raises(KeyError):
-            t = trade("A", entry=99).execute(universe)
+            _ = trade("A", entry=99).execute(universe)
         with pytest.raises(KeyError):
-            t = trade("A", entry=0, exit=99).execute(universe)
+            _ = trade("A", entry=0, exit=99).execute(universe)
 
     @pytest.mark.parametrize("a", [-2.0, -1.0, 0.0, 1.0, 2.0])
     @pytest.mark.parametrize("seed", [0])
@@ -185,6 +185,46 @@ class TestTrade:
             trade([0, 1], lot=[1, 2], entry=0, exit=100, take=10, stop=-10),
             trade(2, lot=3, entry=1, exit=101, take=11, stop=-11),
         ]
+
+    def test_to_dict(self):
+        t = 2.0 * trade("A", entry=1, exit=3)
+        assert t.to_dict() == dict(
+            asset=["A"], entry=1, exit=3, lot=[2.0], take=None, stop=None
+        )
+        t = list([1.0, 2.0]) * trade(["A", "B"], entry=1, exit=3)
+        assert t.to_dict() == dict(
+            asset=["A", "B"], entry=1, exit=3, lot=[1.0, 2.0], take=None, stop=None
+        )
+        t.close = 5  # when executed
+        assert t.to_dict() == dict(
+            asset=["A", "B"],
+            entry=1,
+            exit=3,
+            lot=[1.0, 2.0],
+            take=None,
+            stop=None,
+            close=5,
+        )
+
+    def test_to_json(self):
+        t = 2.0 * trade("A", entry=1, exit=3)
+        assert (
+            t.to_json()
+            == '{"asset": ["A"], "entry": 1, "exit": 3, "take": null, "stop": null, "lot": [2.0]}'
+        )
+        t = list([1.0, 2.0]) * trade(["A", "B"], entry=1, exit=3)
+        assert (
+            t.to_json()
+            == '{"asset": ["A", "B"], "entry": 1, "exit": 3, "take": null, "stop": null, "lot": [1.0, 2.0]}'
+        )
+
+    def test_from_json(self):
+        t = 2.0 * trade("A", entry=1, exit=3)
+        assert t == Trade.load_json(t.to_json())
+        t = list([1.0, 2.0]) * trade(["A", "B"], entry=1, exit=3)
+        assert t == Trade.load_json(t.to_json())
+
+    # --- operations ---
 
     def test_eq(self):
         t = trade("A")

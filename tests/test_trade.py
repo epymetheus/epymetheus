@@ -1,8 +1,8 @@
 from tabnanny import check
+
 import numpy as np
 import pandas as pd
 import pytest
-
 
 from epymetheus import Trade
 from epymetheus import trade
@@ -274,7 +274,6 @@ class TestTrade:
 
 
 class TestCheckTrade:
-
     def test(self):
         universe = pd.DataFrame({"A": [100, 101, 102]}, index=[0, 1, 2])
 

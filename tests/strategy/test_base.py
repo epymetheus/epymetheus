@@ -77,12 +77,15 @@ class TestStrategy:
         assert strategy(universe) == [1.0 * trade("A"), 2.0 * trade("B")]
 
     @pytest.mark.parametrize("verbose", [True, False])
-    def test_run_trades(self, verbose):
+    @pytest.mark.parametrize("check_trades", [True, False])
+    def test_run_trades(self, verbose, check_trades):
         """Test if trades are the same with call"""
         strategy = create_strategy(self.my_strategy, param_1=1.0, param_2=2.0)
         universe = self.universe
 
-        result = strategy.run(universe, verbose=verbose).trades
+        result = strategy.run(
+            universe, verbose=verbose, check_trades=check_trades
+        ).trades
         expected = strategy(universe)
 
         assert result == expected

@@ -376,8 +376,9 @@ def check_trade(
                 raise ValueError("asset is not found in index:", a)
 
     if check_index:
-        if trade.entry not in universe.index:
-            raise ValueError("entry is not found in index:", trade.entry)
+        if getattr(trade, "entry", None) is not None:
+            if trade.entry not in universe.index:
+                raise ValueError("entry is not found in index:", trade.entry)
         if getattr(trade, "exit", None) is not None:
             if trade.exit not in universe.index:
                 raise ValueError("exit is not found in index:", trade.exit)

@@ -300,12 +300,12 @@ class Strategy(abc.ABC):
         s : str
             File name or json string
         """
-        try:
-            trades_as_dict = json.loads(s)
-        except json.JSONDecodeError:
-            # If s cannot be interpreted as a json string,
-            # try to interpret it as a file name of json
-            trades_as_dict = json.load(s)
+        # try:
+        trades_as_dict = json.loads(s)
+        # except json.JSONDecodeError:
+        #     # If s cannot be interpreted as a json string,
+        #     # try to interpret it as a file name of json
+        #     trades_as_dict = json.load(s)
 
         self.load_trades_dict(trades_as_dict)
 

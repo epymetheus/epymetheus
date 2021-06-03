@@ -20,12 +20,10 @@ class _JSONEncoderNumpy(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, np.integer):
             return int(o)
-        if isinstance(o, np.floating):
-            return float(o)
-        elif isinstance(o, np.ndarray):
-            return o.tolist()
-        else:
-            return super().default(o)
+        # if isinstance(o, np.floating):
+        #     return float(o)
+        # if isinstance(o, np.ndarray):
+        #     return o.tolist()
 
 
 def to_json(o) -> str:

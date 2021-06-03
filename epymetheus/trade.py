@@ -4,6 +4,8 @@ from copy import deepcopy
 import numpy as np
 import pandas as pd
 
+from ._utils import to_json
+
 
 def trade(asset, entry=None, exit=None, take=None, stop=None, lot=1.0, **kwargs):
     """
@@ -251,11 +253,12 @@ class Trade:
 
     def to_dict(self) -> dict:
         """
-        Represents `self` as `dict` object.
+        Represents and returns `self` as `dict` object.
 
         Returns
         -------
         trade_as_dict : dict
+            Trade represented as `dict` object.
 
         Examples
         --------
@@ -263,16 +266,13 @@ class Trade:
 
         >>> trade = ep.trade("A0", entry=1, exit=6, take=2)
         >>> trade.to_dict()
-        {'asset': ['A0'], 'entry': 1, 'exit': 6, 'take': 2, 'stop': None, 'lot': [1.0]}
+        {'asset': ['A0'], 'lot': [1.0], 'entry': 1, 'exit': 6, 'take': 2}
         """
-        trade_as_dict = dict(
-            asset=self.asset.tolist(),
-            entry=self.entry,
-            exit=self.exit,
-            take=self.take,
-            stop=self.stop,
-            lot=self.lot.tolist(),
-        )
+        trade_as_dict = dict(asset=self.asset.tolist(), lot=self.lot.tolist())
+        for attr in ("entry", "exit", "take", "stop", "close"):
+            if getattr(self, attr, None) is not None:
+                trade_as_dict[attr] = getattr(self, attr)
+
         if hasattr(self, "close"):
             trade_as_dict["close"] = self.close
 
@@ -280,11 +280,12 @@ class Trade:
 
     def to_json(self) -> str:
         """
-        Represents `self` as a string in JSON format.
+        Represents and returns `self` as a string in JSON format.
 
         Returns
         -------
         trade_as_json : str
+            `self` as a string in JSON format.
 
         Examples
         --------
@@ -292,16 +293,16 @@ class Trade:
 
         >>> trade = ep.trade("A0", entry=1, exit=6, take=2)
         >>> trade.to_json()
-        '{"asset": ["A0"], "entry": 1, "exit": 6, "take": 2, "stop": null, "lot": [1.0]}'
+        '{"asset": ["A0"], "lot": [1.0], "entry": 1, "exit": 6, "take": 2}'
 
         >>> s = trade.to_json()
         >>> ep.Trade.load_json(s)
         trade(['A0'], lot=[1.], entry=1, exit=6, take=2)
         """
-        return json.dumps(self.to_dict())
+        return to_json(self.to_dict())
 
     @classmethod
-    def load_json(cls, s: str) -> object:
+    def load_json(cls, s: str) -> "Trade":
         """
         Loads JSON and creates a `Trade`.
 
@@ -317,7 +318,7 @@ class Trade:
         return cls.load_dict(json.loads(s))
 
     @classmethod
-    def load_dict(cls, d: dict) -> object:
+    def load_dict(cls, d: dict) -> "Trade":
         """
         Loads `dict` object and creates a `Trade`.
 
@@ -329,7 +330,15 @@ class Trade:
         -------
         trade : Trade
         """
-        return cls(**d)
+        close = None
+        if "close" in d:
+            # __init__ does not have a parameter "close"
+            close = d["close"]
+            del d["close"]
+        trade = cls(**d)
+        if close is not None:
+            trade.close = close
+        return trade
 
     def __eq__(self, other):
         def eq(t0, t1, attr):

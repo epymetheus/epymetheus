@@ -161,10 +161,18 @@ class TestStrategy:
         )
         pd.testing.assert_frame_equal(history, expected, check_dtype=False)
 
+    # --- load and dump ---
+
+    def test_trades_to_dict(self):
+        ...
+
+    def test_trades_to_json(self):
+        ...
+
     def test_load(self):
         np.random.seed(42)
         universe = make_randomwalk()
-        strategy = RandomStrategy().run(universe)
+        strategy = RandomStrategy().run(universe, verbose=False)
         history = strategy.history()
 
         strategy_load = RandomStrategy().load(history, universe)
@@ -177,6 +185,36 @@ class TestStrategy:
         with pytest.raises(NotRunError):
             # epymetheus.exceptions.NotRunError: Strategy has not been run
             strategy.history()
+
+    def test_load_trades_dict(self):
+        np.random.seed(42)
+
+        universe = make_randomwalk()
+        strategy = RandomStrategy().run(universe, verbose=False)
+
+        strategy_load = RandomStrategy().load_universe(universe)
+        strategy_load.load_trades_dict(strategy.trades_to_dict())
+
+        result = strategy_load.history()
+        expect = strategy.history()
+
+        pd.testing.assert_frame_equal(result, expect)
+
+    def test_load_trades_json(self):
+        np.random.seed(42)
+
+        universe = make_randomwalk()
+        strategy = RandomStrategy().run(universe, verbose=False)
+
+        strategy_load = RandomStrategy().load_universe(universe)
+        strategy_load.load_trades_json(strategy.trades_to_json())
+
+        result = strategy_load.history()
+        expect = strategy.history()
+
+        pd.testing.assert_frame_equal(result, expect)
+
+    # --- time series ---
 
     def test_wealth(self):
         # TODO test for when exit != close

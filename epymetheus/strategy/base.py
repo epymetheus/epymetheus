@@ -1,4 +1,5 @@
 import abc
+import json
 from functools import partial
 from time import time
 
@@ -7,6 +8,7 @@ import pandas as pd
 
 from .. import ts
 from .._utils import print_if_verbose
+from .._utils import to_json
 from ..exceptions import NoTradeWarning
 from ..exceptions import NotRunError
 from ..metrics import metric_from_name
@@ -209,7 +211,55 @@ class Strategy(abc.ABC):
 
         return pd.DataFrame(data)
 
-    def load(self, history, universe):
+    def trades_to_dict(self) -> list:
+        """
+        Represents and returns `trades` as `dict` objects.
+
+        Returns
+        -------
+        trades_as_dict : list[dict]
+            Trades represented as a `list` of `dict` objects.
+
+        Examples
+        --------
+        >>> import epymetheus as ep
+
+        >>> strategy = ep.create_strategy(
+        ...     lambda universe: [ep.trade("AAPL")]
+        ... ).run(pd.DataFrame({"AAPL": [100, 101]}), verbose=False)
+        >>> strategy.trades_to_dict()
+        [{'asset': ['AAPL'], 'lot': [1.0], 'close': 1}]
+        """
+        return [trade.to_dict() for trade in self.trades]
+
+    def trades_to_json(self):
+        """
+        Represents and returns `trades` as a string in JSON format.
+
+        Returns
+        -------
+        trade_as_json : str
+            `trades` as a string in JSON format.
+
+        Examples
+        --------
+        >>> import epymetheus as ep
+
+        >>> strategy = ep.create_strategy(
+        ...     lambda universe: [ep.trade("AAPL")]
+        ... ).run(pd.DataFrame({"AAPL": [100, 101]}), verbose=False)
+        >>> strategy.trades_to_json()
+        '[{"asset": ["AAPL"], "lot": [1.0], "close": 1}]'
+
+        >>> s = '[{"asset": ["AAPL"], "lot": [1.0], "close": 1}]'
+        >>> strategy = Strategy()
+        >>> strategy.universe = pd.DataFrame({"AAPL": [100, 101]})
+        >>> strategy.load_trades_json(s).trades
+        [trade(['AAPL'], lot=[1.])]
+        """
+        return to_json(self.trades_to_dict())
+
+    def load(self, history: pd.DataFrame, universe: pd.DataFrame):
         """
         Load trade history and universe.
 
@@ -224,10 +274,61 @@ class Strategy(abc.ABC):
         ------
         self : Strategy
         """
-        self.universe = universe
+        return self.load_universe(universe).load_history(history)
+
+    def load_history(self, history: pd.DataFrame):
         self.trades = Trade.load_history(history)
         for trade in self.trades:
-            trade.execute(universe)
+            # Assuming that self has loaded universe
+            trade.execute(self.universe)
+        return self
+
+    def load_trades_dict(self, l: list) -> "Strategy":
+        """
+        l : list[dict]
+        """
+        self.trades = [Trade.load_dict(d) for d in l]
+        for trade in self.trades:
+            # Assuming that self has loaded universe
+            trade.execute(self.universe)
+        return self
+
+    def load_trades_json(self, s: str) -> "Strategy":
+        """
+        Parameters
+        ----------
+        s : str
+            File name or json string
+        """
+        try:
+            trades_as_dict = json.loads(s)
+        except json.JSONDecodeError:
+            # If s cannot be interpreted as a json string,
+            # try to interpret it as a file name of json
+            trades_as_dict = json.load(s)
+
+        self.load_trades_dict(trades_as_dict)
+
+        for trade in self.trades:
+            # Assuming that self has loaded universe
+            trade.execute(self.universe)
+
+        return self
+
+    def load_universe(self, universe: pd.DataFrame):
+        """
+        Load and universe.
+
+        Parameters
+        ----------
+        universe : pandas.DataFrame
+            Universe to load.
+
+        Return
+        ------
+        self : Strategy
+        """
+        self.universe = universe
         return self
 
     def wealth(self) -> pd.Series:

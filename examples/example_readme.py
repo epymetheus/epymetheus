@@ -10,7 +10,7 @@ def print_as_comment(obj):
 
 
 if __name__ == "__main__":
-    sys.path.append("../..")
+    sys.path.append("..")
     seaborn.set_style("whitegrid")
 
     # ---
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     plt.xlabel("date")
     plt.ylabel("wealth [USD]")
     plt.title("Wealth")
-    plt.savefig("wealth.png", bbox_inches="tight", pad_inches=0.1)
+    plt.savefig("fig/wealth.png", bbox_inches="tight", pad_inches=0.1)
 
     # ---
 
@@ -74,14 +74,14 @@ if __name__ == "__main__":
     plt.xlabel("date")
     plt.ylabel("drawdown [USD]")
     plt.title("Drawdown")
-    plt.savefig("drawdown.png", bbox_inches="tight", pad_inches=0.1)
+    plt.savefig("fig/drawdown.png", bbox_inches="tight", pad_inches=0.1)
 
     plt.figure(figsize=(16, 4))
     plt.plot(pd.Series(exposure, index=universe.index), linewidth=1)
     plt.xlabel("date")
     plt.ylabel("net exposure [USD]")
     plt.title("Net exposure")
-    plt.savefig("net_exposure.png", bbox_inches="tight", pad_inches=0.1)
+    plt.savefig("fig/net_exposure.png", bbox_inches="tight", pad_inches=0.1)
 
     # ---
 
@@ -91,4 +91,4 @@ if __name__ == "__main__":
     plt.xlabel("profit and loss")
     plt.ylabel("number of trades")
     plt.title("Profit-loss distribution")
-    plt.savefig("pnl.png", bbox_inches="tight", pad_inches=0.1)
+    plt.savefig("fig/pnl.png", bbox_inches="tight", pad_inches=0.1)

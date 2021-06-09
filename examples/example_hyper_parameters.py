@@ -11,7 +11,7 @@ def print_as_comment(obj):
 
 
 if __name__ == "__main__":
-    sys.path.append("../..")
+    sys.path.append("..")
     seaborn.set_style("whitegrid")
 
     # ---

@@ -207,3 +207,11 @@ def pair_trading_strategy(universe, param_1, ...):
     # Buy 1 share of "BULLISH_STOCK" and sell 2 shares of "BEARISH_STOCK".
     yield [1, -2] * ep.trade(["BULLISH_STOCK", "BEARISH_STOCK"], stop=-100.0)
 ```
+
+## Contributing
+
+Any contributions are more than welcome.
+
+The maintainer (simaki) is not making further enhancements and appreciates pull requests to make them.
+See [Issue](https://github.com/epymetheus/epymetheus/issues) for proposed features.
+Please take a look at [CONTRIBUTING.md](.github/CONTRIBUTING.md) before creating a pull request.

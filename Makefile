@@ -18,3 +18,7 @@ lint:
 format:
 	@poetry run python3 -m black --quiet .
 	@poetry run python3 -m isort --force-single-line-imports --quiet .
+
+.PHONY: doc
+doc:
+	@cd docs && make html

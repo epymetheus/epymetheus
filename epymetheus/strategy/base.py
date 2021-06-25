@@ -16,62 +16,50 @@ from ..trade import Trade
 from ..trade import check_trade
 
 
-def create_strategy(f, **params):
+def create_strategy(fn, **params):
+    """Create a :class:`Strategy` from a function.
+
+    Args:
+        fn (callable): Function that returns iterable of :class:`Trade`
+            from universe and parameters.
+        **params: Parameter values.
+
+    Examples:
+
+        >>> import epymetheus as ep
+        >>>
+        >>> def fn(universe, my_param):
+        ...     yield my_param * ep.trade("AAPL")
+        >>>
+        >>> strategy = ep.create_strategy(fn, my_param=2.0)
+        >>> universe = ...
+        >>> strategy(universe)
+        [trade(['AAPL'], lot=[2.])]
     """
-    Initialize `Strategy` from function.
-
-    Parameters
-    ----------
-    f : callable
-        Function that returns iterable from universe and parameters.
-    **params
-        Parameter values.
-
-    Examples
-    --------
-    >>> from epymetheus import trade
-
-    >>> def logic_func(universe, my_param):
-    ...     return [my_param * trade("AAPL")]
-
-    >>> strategy = create_strategy(logic_func, my_param=2.0)
-    >>> universe = None
-    >>> strategy(universe)
-    [trade(['AAPL'], lot=[2.])]
-    """
-    return Strategy._create_strategy(f, **params)
+    return Strategy._create_strategy(fn, **params)
 
 
 class Strategy(abc.ABC):
-    """
-    Base class of trading strategy.
+    """Base class of trading strategy.
 
-    Examples
-    --------
-    Initialize from function
+    Examples:
 
-    >>> from epymetheus import trade
+        Initialize by subclassing
 
-    >>> f = lambda universe, param: [param * trade("A")]
-    >>> strategy = create_strategy(f, param=2.0)
-    >>> universe = ...
-    >>> strategy(universe)
-    [trade(['A'], lot=[2.])]
-
-    Initialize by subclassing
-
-    >>> class MyStrategy(Strategy):
-    ...
-    ...     def __init__(self, param):
-    ...         self.param = param
-    ...
-    ...     def logic(self, universe):
-    ...         return [self.param * trade("A")]
-
-    >>> strategy = MyStrategy(param=2.0)
-    >>> universe = ...
-    >>> strategy(universe)
-    [trade(['A'], lot=[2.])]
+        >>> import epymetheus as ep
+        >>> from epymetheus import Strategy
+        >>>
+        >>> class MyStrategy(Strategy):
+        ...     def __init__(self, param):
+        ...         self.param = param
+        ...
+        ...     def logic(self, universe):
+        ...         return [self.param * ep.trade("A")]
+        ...
+        >>> strategy = MyStrategy(param=2.0)
+        >>> universe = ...
+        >>> strategy(universe)
+        [trade(['A'], lot=[2.])]
     """
 
     @classmethod
@@ -89,40 +77,31 @@ class Strategy(abc.ABC):
         return trades
 
     def logic(self, universe):
-        """
-        Logic to generate trades from universe.
+        """Logic to generate trades from universe.
+
         Override this to implement trading strategy by subclassing `Strategy`.
 
-        Parameters
-        ----------
-        universe : pandas.DataFrame
-            Historical price data to apply this strategy.
-            The index represents timestamps and the column is the assets.
-        **params
-            Parameter values.
+        Args:
+            universe (pandas.DataFrame): Historical price data to apply this strategy.
+                The index represents timestamps and the column is the assets.
+            **params: Parameter values.
 
-        Returns
-        ------
-        trades : iterable of trades
+        Returns:
+            iterable[Trade]
         """
 
     def run(self, universe, verbose=True, check_trades=False):
-        """
-        Run a backtesting of strategy.
+        """Run a backtesting of strategy.
 
-        Parameters
-        ----------
-        universe : pandas.DataFrame
-            Historical price data to apply this strategy.
-            The index represents timestamps and the column is the assets.
-        verbose : bool, default=True
-            Verbose mode.
-        check_trade : bool, default=False
-            If `True`, check that `asset`, `entry`, `exit` of trade
+        Args:
+            universe (pandas.DataFrame): Historical price data to apply this strategy.
+                The index represents timestamps and the column is the assets.
+            verbose (bool, default=True): Verbose mode.
+            check_trade (bool, default=False):
+                If `True`, check that `asset`, `entry`, `exit` of trade
 
-        Returns
-        -------
-        self
+        Returns:
+            self
         """
         _begin_time = time()
 
@@ -165,18 +144,13 @@ class Strategy(abc.ABC):
         return self
 
     def score(self, metric_name) -> float:
-        """
-        Returns the value of a metric of self.
+        """Returns the value of a metric of self.
 
-        Parameters
-        ----------
-        metric_name : str
-            Metric to evaluate.
+        Args:
+            metric_name (str): Metric to evaluate.
 
-        Returns
-        -------
-        metric_value : float
-            Metric.
+        Returns:
+            float
         """
         if not hasattr(self, "trades"):
             raise NotRunError("Strategy has not been run")
@@ -184,13 +158,10 @@ class Strategy(abc.ABC):
         return metric_from_name(metric_name)(self.trades, self.universe)
 
     def history(self) -> pd.DataFrame:
-        """
-        Return `pandas.DataFrame` of trade history.
+        """Return `pandas.DataFrame` of trade history.
 
-        Returns
-        -------
-        history : pandas.DataFrame
-            Trade History.
+        Returns:
+            pandas.DataFrame
         """
         if not hasattr(self, "trades"):
             raise NotRunError("Strategy has not been run")
@@ -212,67 +183,56 @@ class Strategy(abc.ABC):
         return pd.DataFrame(data)
 
     def trades_to_dict(self) -> list:
-        """
-        Represents and returns `trades` as `dict` objects.
+        """Represents and returns `trades` as `dict` objects.
 
-        Returns
-        -------
-        trades_as_dict : list[dict]
-            Trades represented as a `list` of `dict` objects.
+        Returns:
+            list[dict]
 
-        Examples
-        --------
-        >>> import epymetheus as ep
+        Examples:
 
-        >>> strategy = ep.create_strategy(
-        ...     lambda universe: [ep.trade("AAPL")]
-        ... ).run(pd.DataFrame({"AAPL": [100, 101]}), verbose=False)
-        >>> strategy.trades_to_dict()
-        [{'asset': ['AAPL'], 'lot': [1.0], 'close': 1}]
+            >>> import epymetheus as ep
+            >>>
+            >>> strategy = ep.create_strategy(
+            ...     lambda universe: [ep.trade("AAPL")]
+            ... ).run(pd.DataFrame({"AAPL": [100, 101]}), verbose=False)
+            >>> strategy.trades_to_dict()
+            [{'asset': ['AAPL'], 'lot': [1.0], 'close': 1}]
         """
         return [trade.to_dict() for trade in self.trades]
 
     def trades_to_json(self):
-        """
-        Represents and returns `trades` as a string in JSON format.
+        """Represents and returns `trades` as a string in JSON format.
 
-        Returns
-        -------
-        trade_as_json : str
-            `trades` as a string in JSON format.
+        Returns:
+            str
 
-        Examples
-        --------
-        >>> import epymetheus as ep
+        Examples:
 
-        >>> strategy = ep.create_strategy(
-        ...     lambda universe: [ep.trade("AAPL")]
-        ... ).run(pd.DataFrame({"AAPL": [100, 101]}), verbose=False)
-        >>> strategy.trades_to_json()
-        '[{"asset": ["AAPL"], "lot": [1.0], "close": 1}]'
+            >>> import epymetheus as ep
+            >>>
+            >>> strategy = ep.create_strategy(
+            ...     lambda universe: [ep.trade("AAPL")]
+            ... ).run(pd.DataFrame({"AAPL": [100, 101]}), verbose=False)
+            >>> strategy.trades_to_json()
+            '[{"asset": ["AAPL"], "lot": [1.0], "close": 1}]'
 
-        >>> s = '[{"asset": ["AAPL"], "lot": [1.0], "close": 1}]'
-        >>> strategy = Strategy()
-        >>> strategy.universe = pd.DataFrame({"AAPL": [100, 101]})
-        >>> strategy.load_trades_json(s).trades
-        [trade(['AAPL'], lot=[1.])]
+            >>> s = '[{"asset": ["AAPL"], "lot": [1.0], "close": 1}]'
+            >>> strategy = Strategy()
+            >>> strategy.universe = pd.DataFrame({"AAPL": [100, 101]})
+            >>> strategy.load_trades_json(s).trades
+            [trade(['AAPL'], lot=[1.])]
         """
         return to_json(self.trades_to_dict())
 
     def load(self, history: pd.DataFrame, universe: pd.DataFrame):
-        """
-        Load trade history and universe.
+        """Load trade history and universe.
 
-        Parameters
-        ----------
-        history : pandas.DataFrame
-            History to load.
-        universe : pandas.DataFrame
-            Universe to load.
+        Args:
+            history (pandas.DataFrame): History to load.
+            universe (pandas.DataFrame): Universe to load.
 
-        Return
-        ------
-        self : Strategy
+        Returns:
+            self
         """
         return self.load_universe(universe).load_history(history)
 
@@ -285,7 +245,9 @@ class Strategy(abc.ABC):
 
     def load_trades_dict(self, l: list) -> "Strategy":
         """
-        l : list[dict]
+
+        Args:
+            l (list[dict]):
         """
         self.trades = [Trade.load_dict(d) for d in l]
         for trade in self.trades:
@@ -295,10 +257,9 @@ class Strategy(abc.ABC):
 
     def load_trades_json(self, s: str) -> "Strategy":
         """
-        Parameters
-        ----------
-        s : str
-            File name or json string
+
+        Args:
+            s (str):
         """
         # try:
         trades_as_dict = json.loads(s)
@@ -316,29 +277,22 @@ class Strategy(abc.ABC):
         return self
 
     def load_universe(self, universe: pd.DataFrame):
-        """
-        Load and universe.
+        """Load universe.
 
-        Parameters
-        ----------
-        universe : pandas.DataFrame
-            Universe to load.
+        Args:
+            universe (pandas.DataFrame): Universe to load.
 
-        Return
-        ------
-        self : Strategy
+        Returns:
+            self
         """
         self.universe = universe
         return self
 
     def wealth(self) -> pd.Series:
-        """
-        Return `pandas.Series` of wealth.
+        """Return `pandas.Series` of wealth.
 
-        Returns
-        -------
-        wealth : pandas.Series
-            Series of wealth.
+        Returns:
+            pandas.Series
         """
         if not hasattr(self, "trades"):
             raise NotRunError("Strategy has not been run")
@@ -349,9 +303,9 @@ class Strategy(abc.ABC):
 
     def drawdown(self) -> pd.Series:
         """
-        Returns
-        -------
-        drawdown : pandas.Series
+
+        Returns:
+            pandas.Series
         """
         if not hasattr(self, "trades"):
             raise NotRunError("Strategy has not been run")
@@ -377,29 +331,21 @@ class Strategy(abc.ABC):
         return pd.Series(exposure, index=self.universe.index)
 
     def get_params(self) -> dict:
-        """
-        Set the parameters of this strategy.
+        """Set the parameters of this strategy.
 
-        Returns
-        -------
-        params : dict[str, *]
-            Parameters.
+        Returns:
+            dict[str, *]
         """
         return getattr(self, "_params", {})
 
     def set_params(self, **params):
-        """
-        Set the parameters of this strategy.
+        """Set the parameters of this strategy.
 
-        Parameters
-        ----------
-        **params : dict
-            Strategy parameters.
+        Args:
+            **params (dict): Strategy parameters.
 
-        Returns
-        -------
-        self : Strategy
-            Strategy with new parameters.
+        Returns:
+            self
         """
         valid_keys = self.get_params().keys()
 

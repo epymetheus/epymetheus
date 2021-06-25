@@ -4,21 +4,21 @@ from .base import Strategy
 
 
 class StrategyContainer(Strategy):
-    """
-    Base class of Strategy container.
+    """Base class of Strategy container.
 
-    Attributes
-    ----------
-    _strategies : OrderedDict
+    Attributes:
+        _strategies : OrderedDict
 
-    >>> from epymetheus import trade
-    >>> from epymetheus import create_strategy
+    Examples:
 
-    >>> strategy1 = create_strategy(lambda universe: [trade("A")])
-    >>> strategy2 = create_strategy(lambda universe: [trade("B"), trade("C")])
-    >>> s = StrategyList([strategy1, strategy2])
-    >>> len(s)
-    2
+        >>> from epymetheus import trade
+        >>> from epymetheus import create_strategy
+        >>>
+        >>> strategy1 = create_strategy(lambda universe: [trade("A")])
+        >>> strategy2 = create_strategy(lambda universe: [trade("B"), trade("C")])
+        >>> s = StrategyList([strategy1, strategy2])
+        >>> len(s)
+        2
     """
 
     def __init__(self, **kwargs):
@@ -59,24 +59,22 @@ class StrategyContainer(Strategy):
 
 
 class StrategyList(StrategyContainer):
-    """
-    Holds substrategies in a list.
+    """Hold substrategies in a list.
 
-    Parameters
-    ----------
-    strategies : iterable of Strategies
+    Parameters:
+        strategies (iterable[Strategies]):
 
-    Examples
-    --------
-    >>> from epymetheus import trade
-    >>> from epymetheus import create_strategy
+    Examples:
 
-    >>> strategy1 = create_strategy(lambda universe: [trade("A")])
-    >>> strategy2 = create_strategy(lambda universe: [trade("B"), trade("C")])
-    >>> strategy_list = StrategyList([strategy1, strategy2])
-    >>> universe = ...
-    >>> strategy_list(universe)
-    [trade(['A'], lot=[1.]), trade(['B'], lot=[1.]), trade(['C'], lot=[1.])]
+        >>> import epymetheus as ep
+        >>> from epymetheus.strategy import StrategyList
+        >>>
+        >>> strategy1 = ep.create_strategy(lambda universe: [ep.trade("A")])
+        >>> strategy2 = ep.create_strategy(lambda universe: [ep.trade("B"), ep.trade("C")])
+        >>> strategy_list = StrategyList([strategy1, strategy2])
+        >>> universe = ...
+        >>> strategy_list(universe)
+        [trade(['A'], lot=[1.]), trade(['B'], lot=[1.]), trade(['C'], lot=[1.])]
     """
 
     def __init__(self, strategies: list):
@@ -112,25 +110,22 @@ class StrategyList(StrategyContainer):
 
 
 class StrategyDict(StrategyContainer):
-    """
-    Holds substrategies in a dictionary.
+    """Hold substrategies in a dictionary.
 
-    Parameters
-    ----------
-    strategies : dict[str, Strategy]
-        A dictionary of (string: Strategy).
+    Args:
+        strategies (dict[str, Strategy]): A dictionary of (string: Strategy).
 
-    Examples
-    --------
-    >>> from epymetheus import trade
-    >>> from epymetheus import create_strategy
+    Examples:
 
-    >>> strategy1 = create_strategy(lambda universe: [trade("A")])
-    >>> strategy2 = create_strategy(lambda universe: [trade("B"), trade("C")])
-    >>> strategy_dict = StrategyDict({"S1": strategy1, "S2": strategy2})
-    >>> universe = ...
-    >>> strategy_dict(universe)
-    [trade(['A'], lot=[1.]), trade(['B'], lot=[1.]), trade(['C'], lot=[1.])]
+        >>> from epymetheus import trade
+        >>> from epymetheus import create_strategy
+        >>>
+        >>> strategy1 = create_strategy(lambda universe: [trade("A")])
+        >>> strategy2 = create_strategy(lambda universe: [trade("B"), trade("C")])
+        >>> strategy_dict = StrategyDict({"S1": strategy1, "S2": strategy2})
+        >>> universe = ...
+        >>> strategy_dict(universe)
+        [trade(['A'], lot=[1.]), trade(['B'], lot=[1.]), trade(['C'], lot=[1.])]
     """
 
     def __init__(self, strategies: dict):

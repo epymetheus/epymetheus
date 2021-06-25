@@ -12,14 +12,15 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../..'))
+
+sys.path.insert(0, os.path.abspath("../.."))
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'Epymetheus'
-copyright = '2021, Shota Imaki'
-author = 'Shota Imaki'
+project = "Epymetheus"
+copyright = "2021, Shota Imaki"
+author = "Shota Imaki"
 
 
 # -- General configuration ---------------------------------------------------
@@ -48,7 +49,7 @@ numpydoc_show_class_members = False
 autosectionlabel_prefix_document = True
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

@@ -8,18 +8,24 @@ from ._utils import to_json
 
 
 def trade(asset, entry=None, exit=None, take=None, stop=None, lot=1.0, **kwargs):
-    """Create `Trade`.
+    """Create a :class:`Trade`.
 
     Args:
-        asset (str or array of str): Name of assets.
-        entry (object, optional): Datetime of entry.
-        exit (object, optional): Datetime of exit.
+        asset (str or array-like): Name of assets to trade.
+            If an array-like (e.g. `list` or `numpy.ndarray`) of objects is given,
+            a trade transacts multiple assets at once.
+        entry (object, optional): Timestamp to open a trade.
+            If not provided, the first timestamp in a given `universe`.
+        exit (object, optional): Timestamp to exit a trade.
+            If not provided, the last timestamp in a given `universe`.
         take (float > 0, optional): Threshold of profit-take.
         stop (float < 0, optional): Threshold of stop-loss.
-        lot (float or np.array, default 1.0): Lot to trade in unit of share.
+        lot (float or array-like, default 1.0): The amount of trade.
+            If an array-like (e.g. `list` or `numpy.ndarray`) of objects is given,
+            each element in an array represents the amount of each asset.
 
     Returns:
-        epymetheus.Trade
+        :class:`Trade`
 
     Examples:
 
@@ -61,12 +67,18 @@ class Trade:
     """A `epymetheus.Trade` represents a single trade.
 
     Args:
-        asset (np.ndarray): Name of assets.
-        entry (object, optional): Datetime of entry.
-        exit (object, optional): Datetime of exit.
-        take (float, optional): Threshold of profit-take.
-        stop (float, optional): Threshold of stop-loss.
-        lot (float or np.ndarray, default 1.0): Lot to trade in unit of share.
+        asset (str or array-like): Name of assets to trade.
+            If an array-like (e.g. `list` or `numpy.ndarray`) of objects is given,
+            a trade transacts multiple assets at once.
+        entry (object, optional): Timestamp to open a trade.
+            If not provided, the first timestamp in a given `universe`.
+        exit (object, optional): Timestamp to exit a trade.
+            If not provided, the last timestamp in a given `universe`.
+        take (float > 0, optional): Threshold of profit-take.
+        stop (float < 0, optional): Threshold of stop-loss.
+        lot (float or array-like, default 1.0): The amount of trade.
+            If an array-like (e.g. `list` or `numpy.ndarray`) of objects is given,
+            each element in an array represents the amount of each asset.
 
     Attributes:
         close (object): Datetime to close the trade.
@@ -406,7 +418,7 @@ def check_trade(
     check_lot: bool = True,
     check_take: bool = True,
     check_stop: bool = True,
-):
+) -> None:
     """Validation for `Trade`.
 
     Args:
@@ -417,6 +429,9 @@ def check_trade(
         check_lot (bool, default=True):
         check_take (bool, default=True):
         check_stop (bool, default=True):
+
+    Returns:
+        None
 
     Raises:
         ValueError: If something is wrong

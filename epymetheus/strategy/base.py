@@ -38,6 +38,9 @@ def create_strategy(fn, **params) -> T:
             from a `universe` and parameters.
         **params: names and values of the parameters.
 
+    Returns:
+        :class:`Strategy`
+
     Examples:
 
         The following strategy trades the first asset in a given `universe`.
@@ -106,7 +109,7 @@ class Strategy(abc.ABC):
     """
 
     @classmethod
-    def _create_strategy(cls, fn, **params):
+    def _create_strategy(cls, fn, **params) -> T:
         self = cls()
         self._fn = fn
         self._params = params
@@ -133,7 +136,7 @@ class Strategy(abc.ABC):
             iterable[Trade]
         """
 
-    def run(self, universe, verbose=True, check_trades=False):
+    def run(self: T, universe, verbose=True, check_trades=False) -> T:
         """Run a backtesting of strategy.
 
         Args:

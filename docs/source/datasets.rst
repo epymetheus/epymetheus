@@ -4,7 +4,14 @@
 epymetheus.datasets
 ===================
 
-.. currentmodule:: pfhedge.nn.datasets
+.. currentmodule:: epymetheus.datasets
+
+Random Walk
+-----------
 
 .. autofunction:: make_randomwalk
+
+US Stocks
+---------
+
 .. autofunction:: fetch_usstocks

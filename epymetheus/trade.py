@@ -174,10 +174,10 @@ class Trade:
             >>> trade = [2, -3] * ep.trade(["A0", "A2"], entry=1, exit=3)
             >>> trade.array_value(universe)
             array([[  2.,  -9.],
-                [  4., -12.],
-                [  6., -15.],
-                [  8., -18.],
-                [ 10., -21.]])
+                   [  4., -12.],
+                   [  6., -15.],
+                   [  8., -18.],
+                   [ 10., -21.]])
         """
         array_value = self.lot * universe.loc[:, self.asset].values
         return array_value
@@ -425,7 +425,7 @@ def check_trade(
 
         >>> import epymetheus as ep
         >>> from epymetheus.trade import check_trade
-
+        >>>
         >>> universe = pd.DataFrame({"A": [100, 101, 102]}, index=[0, 1, 2])
         >>> trade = ep.trade("A", entry=1)
         >>> check_trade(trade, universe)  # OK

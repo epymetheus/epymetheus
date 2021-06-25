@@ -418,7 +418,7 @@ def check_trade(
     check_lot: bool = True,
     check_take: bool = True,
     check_stop: bool = True,
-):
+) -> None:
     """Validation for `Trade`.
 
     Args:
@@ -429,6 +429,9 @@ def check_trade(
         check_lot (bool, default=True):
         check_take (bool, default=True):
         check_stop (bool, default=True):
+
+    Returns:
+        None
 
     Raises:
         ValueError: If something is wrong

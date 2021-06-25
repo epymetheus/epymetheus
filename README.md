@@ -11,7 +11,7 @@
 [![dl](https://img.shields.io/pypi/dm/epymetheus)](https://pypi.org/project/epymetheus)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-![wealth](examples/readme/wealth.png)
+![wealth](examples/fig/wealth.png)
 
 ## Introduction
 
@@ -140,7 +140,7 @@ series_wealth.head()
 # Freq: D, dtype: float64
 ```
 
-![wealth](examples/readme/wealth.png)
+![wealth](examples/fig/wealth.png)
 
 ### Scores
 
@@ -160,8 +160,8 @@ drawdown = my_strategy.drawdown()
 exposure = my_strategy.net_exposure()
 ```
 
-![drawdown](examples/readme/drawdown.png)
-![net_exposure](examples/readme/net_exposure.png)
+![drawdown](examples/fig/drawdown.png)
+![net_exposure](examples/fig/net_exposure.png)
 
 ## More examples
 

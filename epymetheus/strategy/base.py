@@ -2,6 +2,7 @@ import abc
 import json
 from functools import partial
 from time import time
+from typing import TypeVar
 
 import numpy as np
 import pandas as pd
@@ -15,24 +16,41 @@ from ..metrics import metric_from_name
 from ..trade import Trade
 from ..trade import check_trade
 
+T = TypeVar("T", bound="Strategy")
 
-def create_strategy(fn, **params):
+
+def create_strategy(fn, **params) -> T:
     """Create a :class:`Strategy` from a function.
 
+    A function `fn` takes more than one parameters.
+    The first parameter should be `universe`, which is a `pandas.DataFrame`
+    of historical prices. That is, its indices represents timestamp, columns
+    stands for the names of assets, and each element in the frame stores a price.
+    The following parameters are user-defined ones parameterizing the strategy.
+    These parameters should be useful when one want to try various configurations
+    such as trade volume, profit-taking threshold, loss-cut threshold, and so forth.
+    The function `fn` is supposed to yield arbitrary numbers of :class:`Trade`
+    depending on the `universe` and other parameters. These trades will be executed
+    for the `universe` and evaluated accordingly.
+
     Args:
-        fn (callable): Function that returns iterable of :class:`Trade`
-            from universe and parameters.
-        **params: Parameter values.
+        fn (callable): A function that returns iterable of :class:`Trade`
+            from a `universe` and parameters.
+        **params: names and values of the parameters.
 
     Examples:
+
+        The following strategy trades the first asset in a given `universe`.
+        The parameter `my_param` controls the volume to trade.
 
         >>> import epymetheus as ep
         >>>
         >>> def fn(universe, my_param):
-        ...     yield my_param * ep.trade("AAPL")
+        ...     asset = universe.columns[0]
+        ...     yield my_param * ep.trade(asset)
         >>>
         >>> strategy = ep.create_strategy(fn, my_param=2.0)
-        >>> universe = ...
+        >>> universe = pd.DataFrame({"AAPL": [100, 101], "AMZN": [200, 201]})
         >>> strategy(universe)
         [trade(['AAPL'], lot=[2.])]
     """
@@ -42,36 +60,61 @@ def create_strategy(fn, **params):
 class Strategy(abc.ABC):
     """Base class of trading strategy.
 
+    There are two ways to create a :class:`Strategy`:
+
+    - Use :func:`create_strategy`: This should be easier for simple strategies.
+      See :func:`create_strategy`.
+    - Subclass :class:`Strategy`: See below.
+
+    One can create a strategy by subclassing :class:`Strategy` and
+    overriding a method `logic`.
+    The method `logic` takes arbitrary numbers of user-defined parameters
+    parameterizing the strategy.
+    These parameters should be useful when one want to try various configurations
+    such as trade volume, profit-taking threshold, loss-cut threshold, and so forth.
+    The method `logic` is supposed to yield arbitrary numbers of :class:`Trade`
+    depending on the `universe` and other parameters. These trades will be executed
+    for the `universe` and evaluated accordingly.
+
+
     Examples:
 
-        Initialize by subclassing
+        The following strategy trades the first asset in a given `universe`.
+        The parameter `my_param` controls the volume to trade.
 
+        >>> import pandas as pd
         >>> import epymetheus as ep
-        >>> from epymetheus import Strategy
         >>>
-        >>> class MyStrategy(Strategy):
-        ...     def __init__(self, param):
-        ...         self.param = param
+        >>> class MyStrategy(ep.Strategy):
+        ...     def __init__(self, my_param):
+        ...         self.my_param = my_param
         ...
-        ...     def logic(self, universe):
-        ...         return [self.param * ep.trade("A")]
+        ...     def logic(self, universe: pd.DataFrame):
+        ...         asset = universe.columns[0]
+        ...         yield self.my_param * ep.trade(asset)
         ...
-        >>> strategy = MyStrategy(param=2.0)
-        >>> universe = ...
+        >>> strategy = MyStrategy(my_param=2.0)
+        >>> universe = pd.DataFrame({"AAPL": [100, 101], "AMZN": [200, 201]})
         >>> strategy(universe)
-        [trade(['A'], lot=[2.])]
+        [trade(['AAPL'], lot=[2.])]
+
+        The method :func:`run` runs the strategy on a given universe.
+
+        >>> strategy = MyStrategy(my_param=2.0).run(universe, verbose=False)
+        >>> strategy.trades
+        [trade(['AAPL'], lot=[2.])]
     """
 
     @classmethod
-    def _create_strategy(cls, f, **params):
+    def _create_strategy(cls, fn, **params):
         self = cls()
-        self._f = f
+        self._fn = fn
         self._params = params
         return self
 
     def __call__(self, universe, to_list=True):
-        if hasattr(self, "_f"):
-            setattr(self, "logic", partial(self._f, **self.get_params()))
+        if hasattr(self, "_fn"):
+            setattr(self, "logic", partial(self._fn, **self.get_params()))
         trades = self.logic(universe)
         trades = list(trades) if to_list else trades
         return trades
@@ -373,8 +416,8 @@ class Strategy(abc.ABC):
         >>> repr(strategy)
         'MyStrategy'
         """
-        if hasattr(self, "_f"):
-            fname = self._f.__name__
+        if hasattr(self, "_fn"):
+            fname = self._fn.__name__
             param = ", ".join(f"{k}={v}" for k, v in self.get_params().items())
             param = f", {param}" if param != "" else ""
             return f"strategy({fname}{param})"

@@ -8,72 +8,69 @@ from ._utils import to_json
 
 
 def trade(asset, entry=None, exit=None, take=None, stop=None, lot=1.0, **kwargs):
-    """
-    Initialize `Trade`.
+    """Create `Trade`.
 
-    Parameters
-    ----------
-    asset : str or array of str
-        Name of assets.
-    entry : object or None, default None
-        Datetime of entry.
-    exit : object or None, default None
-        Datetime of exit.
-    take : float > 0 or None, default None
-        Threshold of profit-take.
-    stop : float < 0 or None, default None
-        Threshold of stop-loss.
-    lot : np.array, default 1.0
-        Lot to trade in unit of share.
+    Args:
+        asset (str or array of str): Name of assets.
+        entry (object, optional): Datetime of entry.
+        exit (object, optional): Datetime of exit.
+        take (float > 0, optional): Threshold of profit-take.
+        stop (float < 0, optional): Threshold of stop-loss.
+        lot (float or np.array, default 1.0): Lot to trade in unit of share.
 
-    Examples
-    --------
-    >>> trade("AAPL")
-    trade(['AAPL'], lot=[1.])
+    Returns:
+        epymetheus.Trade
 
-    >>> trade(["AAPL", "AMZN"])
-    trade(['AAPL' 'AMZN'], lot=[1. 1.])
+    Examples:
 
-    >>> [1.0, -2.0] * trade(["AAPL", "AMZN"])
-    trade(['AAPL' 'AMZN'], lot=[ 1. -2.])
+        Buy a single unit of "AAPL".
 
-    >>> from datetime import date
-    >>> trade("AAPL", date(2020, 1, 1))
-    trade(['AAPL'], lot=[1.], entry=2020-01-01)
+        >>> trade("AAPL")
+        trade(['AAPL'], lot=[1.])
 
-    >>> trade("AAPL", date(2020, 1, 1), date(2020, 1, 31))
-    trade(['AAPL'], lot=[1.], entry=2020-01-01, exit=2020-01-31)
+        Buy single units of "AAPL" and "AMZN".
 
-    >>> trade("AAPL", take=200.0, stop=-100.0)
-    trade(['AAPL'], lot=[1.], take=200.0, stop=-100.0)
+        >>> trade(["AAPL", "AMZN"])
+        trade(['AAPL' 'AMZN'], lot=[1. 1.])
+
+        Buy a single unit of "AAPL" and sell two units of "AMZN".
+
+        >>> [1.0, -2.0] * trade(["AAPL", "AMZN"])
+        trade(['AAPL' 'AMZN'], lot=[ 1. -2.])
+
+        Entry a trade from 2020-01-01.
+
+        >>> from datetime import date
+        >>> trade("AAPL", date(2020, 1, 1))
+        trade(['AAPL'], lot=[1.], entry=2020-01-01)
+
+        Entry a trade from 2020-01-01 and exit at 2020-01-31.
+
+        >>> trade("AAPL", date(2020, 1, 1), date(2020, 1, 31))
+        trade(['AAPL'], lot=[1.], entry=2020-01-01, exit=2020-01-31)
+
+        Configure profit-take and loss-cut (in unit of dollar).
+
+        >>> trade("AAPL", take=200.0, stop=-100.0)
+        trade(['AAPL'], lot=[1.], take=200.0, stop=-100.0)
     """
     return Trade(asset, entry=entry, exit=exit, take=take, stop=stop, lot=lot, **kwargs)
 
 
 class Trade:
-    """
-    Represent a single trade.
+    """A `epymetheus.Trade` represents a single trade.
 
-    Parameters
-    ----------
-    asset : np.array
-        Name of assets.
-    entry : object or None, default None
-        Datetime of entry.
-    exit : object or None, default None
-        Datetime of exit.
-    take : float > 0 or None, default None
-        Threshold of profit-take.
-    stop : float < 0 or None, default None
-        Threshold of stop-loss.
-    lot : np.array, default 1.0
-        Lot to trade in unit of share.
+    Args:
+        asset (np.ndarray): Name of assets.
+        entry (object, optional): Datetime of entry.
+        exit (object, optional): Datetime of exit.
+        take (float, optional): Threshold of profit-take.
+        stop (float, optional): Threshold of stop-loss.
+        lot (float or np.ndarray, default 1.0): Lot to trade in unit of share.
 
-    Attributes
-    ----------
-    - close: object
-        Datetime to close the trade.
-        It is set by the method `self.execute`.
+    Attributes:
+        close (object): Datetime to close the trade.
+            It is set by the method `self.execute`.
     """
 
     def __init__(self, asset, entry=None, exit=None, take=None, stop=None, lot=1.0):
@@ -89,41 +86,38 @@ class Trade:
         self.lot = lot
 
     def execute(self, universe):
-        """
-        Execute trade and set `self.close`.
+        """Execute trade and set `self.close`.
 
-        Parameters
-        ----------
-        universe : pandas.DataFrame
+        Args:
+            universe : pandas.DataFrame
 
-        Returns
-        -------
-        self : Trade
+        Returns:
+            self
 
-        Examples
-        --------
-        >>> import pandas as pd
-        >>> import epymetheus as ep
-        >>> universe = pd.DataFrame({
-        ...     "A0": [1., 2., 3., 4., 5., 6., 7.],
-        ...     "A1": [2., 3., 4., 5., 6., 7., 8.],
-        ...     "A2": [3., 4., 5., 6., 7., 8., 9.],
-        ... }, dtype=float)
+        Examples:
 
-        >>> t = ep.trade("A0", entry=1, exit=6)
-        >>> t = t.execute(universe)
-        >>> t.close
-        6
+            >>> import pandas as pd
+            >>> import epymetheus as ep
+            >>> universe = pd.DataFrame({
+            ...     "A0": [1., 2., 3., 4., 5., 6., 7.],
+            ...     "A1": [2., 3., 4., 5., 6., 7., 8.],
+            ...     "A2": [3., 4., 5., 6., 7., 8., 9.],
+            ... }, dtype=float)
 
-        >>> t = ep.trade("A0", entry=1, exit=6, take=2)
-        >>> t = t.execute(universe)
-        >>> t.close
-        3
+            >>> t = ep.trade("A0", entry=1, exit=6)
+            >>> t = t.execute(universe)
+            >>> t.close
+            6
 
-        >>> t = -ep.trade(asset="A0", entry=1, exit=6, stop=-2)
-        >>> t = t.execute(universe)
-        >>> t.close
-        3
+            >>> t = ep.trade("A0", entry=1, exit=6, take=2)
+            >>> t = t.execute(universe)
+            >>> t.close
+            3
+
+            >>> t = -ep.trade(asset="A0", entry=1, exit=6, stop=-2)
+            >>> t = t.execute(universe)
+            >>> t.close
+            3
         """
         entry = universe.index[0] if self.entry is None else self.entry
         exit = universe.index[-1] if self.exit is None else self.exit
@@ -161,57 +155,53 @@ class Trade:
         return self
 
     def array_value(self, universe):
-        """
-        Return value of self for each asset.
+        """Return value of self for each asset.
 
-        Returns
-        -------
-        array_value : numpy.array, shape (n_bars, n_orders)
-            Array of values.
+        Args:
+            array_value (numpy.ndarray): Array of values.
+                shape (n_bars, n_orders)
 
-        Examples
-        --------
-        >>> import pandas as pd
-        >>> import epymetheus as ep
-        ...
-        >>> universe = pd.DataFrame({
-        ...     "A0": [1, 2, 3, 4, 5],
-        ...     "A1": [2, 3, 4, 5, 6],
-        ...     "A2": [3, 4, 5, 6, 7],
-        ... })
-        >>> trade = [2, -3] * ep.trade(["A0", "A2"], entry=1, exit=3)
-        >>> trade.array_value(universe)
-        array([[  2.,  -9.],
-               [  4., -12.],
-               [  6., -15.],
-               [  8., -18.],
-               [ 10., -21.]])
+        Examples:
+
+            >>> import pandas as pd
+            >>> import epymetheus as ep
+            ...
+            >>> universe = pd.DataFrame({
+            ...     "A0": [1, 2, 3, 4, 5],
+            ...     "A1": [2, 3, 4, 5, 6],
+            ...     "A2": [3, 4, 5, 6, 7],
+            ... })
+            >>> trade = [2, -3] * ep.trade(["A0", "A2"], entry=1, exit=3)
+            >>> trade.array_value(universe)
+            array([[  2.,  -9.],
+                [  4., -12.],
+                [  6., -15.],
+                [  8., -18.],
+                [ 10., -21.]])
         """
         array_value = self.lot * universe.loc[:, self.asset].values
         return array_value
 
     def final_pnl(self, universe):
-        """
-        Return final profit-loss of self.
+        """Return final profit-loss of self.
 
-        Returns
-        -------
-        pnl : numpy.array, shape (n_orders, )
+        Returns:
+            numpy.ndarray, shape (n_orders, )
 
-        Examples
-        --------
-        >>> import pandas as pd
-        >>> import epymetheus as ep
-        ...
-        >>> universe = pd.DataFrame({
-        ...     "A0": [1, 2, 3, 4, 5],
-        ...     "A1": [2, 3, 4, 5, 6],
-        ...     "A2": [3, 4, 5, 6, 7],
-        ... }, dtype=float)
-        >>> t = ep.trade(["A0", "A2"], entry=1, exit=3)
-        >>> t = t.execute(universe)
-        >>> t.final_pnl(universe)
-        array([2., 2.])
+        Examples:
+
+            >>> import pandas as pd
+            >>> import epymetheus as ep
+            ...
+            >>> universe = pd.DataFrame({
+            ...     "A0": [1, 2, 3, 4, 5],
+            ...     "A1": [2, 3, 4, 5, 6],
+            ...     "A2": [3, 4, 5, 6, 7],
+            ... }, dtype=float)
+            >>> t = ep.trade(["A0", "A2"], entry=1, exit=3)
+            >>> t = t.execute(universe)
+            >>> t.final_pnl(universe)
+            array([2., 2.])
         """
         i_entry = universe.index.get_indexer([self.entry]).item()
         i_close = universe.index.get_indexer([self.close]).item()
@@ -227,16 +217,13 @@ class Trade:
 
     @classmethod
     def load_history(cls, history: pd.DataFrame):
-        """
-        Load trades from a DataFrame of history.
+        """Load trades from a DataFrame of history.
 
-        Parameters
-        ----------
-        history : pd.DataFrame
+        Args:
+            pandas.DataFrame
 
-        Returns
-        -------
-        trades : list[Trade]
+        Returns:
+            list[Trade]
         """
         trades = []
         for trade_id in history.trade_id.unique().tolist():
@@ -252,21 +239,18 @@ class Trade:
         return trades
 
     def to_dict(self) -> dict:
-        """
-        Represents and returns `self` as `dict` object.
+        """Represents and returns `self` as `dict` object.
 
-        Returns
-        -------
-        trade_as_dict : dict
-            Trade represented as `dict` object.
+        Returns:
+            dict
 
-        Examples
-        --------
-        >>> import epymetheus as ep
+        Examples:
 
-        >>> trade = ep.trade("A0", entry=1, exit=6, take=2)
-        >>> trade.to_dict()
-        {'asset': ['A0'], 'lot': [1.0], 'entry': 1, 'exit': 6, 'take': 2}
+            >>> import epymetheus as ep
+
+            >>> trade = ep.trade("A0", entry=1, exit=6, take=2)
+            >>> trade.to_dict()
+            {'asset': ['A0'], 'lot': [1.0], 'entry': 1, 'exit': 6, 'take': 2}
         """
         trade_as_dict = dict(asset=self.asset.tolist(), lot=self.lot.tolist())
         for attr in ("entry", "exit", "take", "stop", "close"):
@@ -279,56 +263,46 @@ class Trade:
         return trade_as_dict
 
     def to_json(self) -> str:
-        """
-        Represents and returns `self` as a string in JSON format.
+        """Represents and returns `self` as a string in JSON format.
 
-        Returns
-        -------
-        trade_as_json : str
-            `self` as a string in JSON format.
+        Returns:
+            str
 
-        Examples
-        --------
-        >>> import epymetheus as ep
+        Examples:
 
-        >>> trade = ep.trade("A0", entry=1, exit=6, take=2)
-        >>> trade.to_json()
-        '{"asset": ["A0"], "lot": [1.0], "entry": 1, "exit": 6, "take": 2}'
+            >>> import epymetheus as ep
 
-        >>> s = trade.to_json()
-        >>> ep.Trade.load_json(s)
-        trade(['A0'], lot=[1.], entry=1, exit=6, take=2)
+            >>> trade = ep.trade("A0", entry=1, exit=6, take=2)
+            >>> trade.to_json()
+            '{"asset": ["A0"], "lot": [1.0], "entry": 1, "exit": 6, "take": 2}'
+
+            >>> s = trade.to_json()
+            >>> ep.Trade.load_json(s)
+            trade(['A0'], lot=[1.], entry=1, exit=6, take=2)
         """
         return to_json(self.to_dict())
 
     @classmethod
     def load_json(cls, s: str) -> "Trade":
-        """
-        Loads JSON and creates a `Trade`.
+        """Loads JSON and creates a `Trade`.
 
-        Parameters
-        ----------
-        s : str
-            JSON string
+        Args:
+            s (str): JSON string
 
-        Returns
-        -------
-        trade : Trade
+        Returns:
+            Trade
         """
         return cls.load_dict(json.loads(s))
 
     @classmethod
     def load_dict(cls, d: dict) -> "Trade":
-        """
-        Loads `dict` object and creates a `Trade`.
+        """Loads `dict` object and creates a `Trade`.
 
-        Parameters
-        ----------
-        d : dict
+        Args:
+            d (dict):
 
-        Returns
-        -------
-        trade : Trade
+        Returns:
+            Trade
         """
         close = None
         if "close" in d:
@@ -433,34 +407,28 @@ def check_trade(
     check_take: bool = True,
     check_stop: bool = True,
 ):
-    """
-    Validation for `Trade`.
+    """Validation for `Trade`.
 
-    Parameters
-    ----------
-    trade : Trade
-        Trade object to validate.
-    universe : pd.DataFrame
-        Universe (price data) to apply `trade`.
-    check_asset : bool, default=True
-    check_index : bool, default=True
-    check_lot : bool, default=True
-    check_take : bool, default=True
-    check_stop : bool, default=True
+    Args:
+        trade (Trade): Trade object to validate.
+        universe (pandas.DataFrame): Universe (price data) to apply `trade`.
+        check_asset (bool, default=True): If `True`, ...
+        check_index (bool, default=True):
+        check_lot (bool, default=True):
+        check_take (bool, default=True):
+        check_stop (bool, default=True):
 
-    Raises
-    ------
-    ValueError
-        When something is wrong with validation.
+    Raises:
+        ValueError: If something is wrong
 
-    Examples
-    --------
-    >>> import epymetheus as ep
-    >>> from epymetheus.trade import check_trade
+    Examples:
 
-    >>> universe = pd.DataFrame({"A": [100, 101, 102]}, index=[0, 1, 2])
-    >>> trade = ep.trade("A", entry=1)
-    >>> check_trade(trade, universe)  # OK
+        >>> import epymetheus as ep
+        >>> from epymetheus.trade import check_trade
+
+        >>> universe = pd.DataFrame({"A": [100, 101, 102]}, index=[0, 1, 2])
+        >>> trade = ep.trade("A", entry=1)
+        >>> check_trade(trade, universe)  # OK
     """
     if check_asset:
         for a in trade.asset:

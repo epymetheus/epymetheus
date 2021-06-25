@@ -11,15 +11,19 @@
 [![dl](https://img.shields.io/pypi/dm/epymetheus)](https://pypi.org/project/epymetheus)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
+[Documentation](https://epymetheus.github.io/epymetheus/)
+
+***Epymetheus*** is a multi-asset backtesting framework. It features an intuitive user API that lets analysts try out their trade strategies right away.
+
 ![wealth](examples/fig/wealth.png)
 
-## Introduction
+## Installation
 
-***Epymetheus*** is a multi-asset backtesting framework.
+```sh
+$ pip install epymetheus
+```
 
-It features an intuitive user API that lets analysts try out their trade strategies right away.
-
-### Features
+## Features
 
 1. **Intuitive and Pythonic API**
     - *Epymetheus* designs Pythonic API that lets you code your idea intuitively without any fuss.
@@ -33,7 +37,7 @@ It features an intuitive user API that lets analysts try out their trade strateg
 4. **Full Test Coverage**:
     - Epymetheus is thoroughly tested by [continuous integration](https://github.com/epymetheus/epymetheus/actions?query=workflow%3ACI) with 100% code coverage.
 
-### Integrations
+## Integrations
 
 Your trading strategy may incorporate various libraries out there, for instance,
 
@@ -41,12 +45,6 @@ Your trading strategy may incorporate various libraries out there, for instance,
 * **Econometrics** - [statsmodels](https://github.com/statsmodels/statsmodels), [Prophet](https://github.com/facebook/prophet), etc.
 * **Technical Indicators** - [TA-Lib](https://github.com/mrjbq7/ta-lib), etc.
 * **Hyperparameter Optimization** - [Optuna](https://github.com/optuna/optuna) (Example follows), etc.
-
-## Installation
-
-```sh
-$ pip install epymetheus
-```
 
 ## How to use
 

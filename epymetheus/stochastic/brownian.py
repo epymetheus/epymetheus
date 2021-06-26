@@ -2,7 +2,11 @@ import numpy as np
 
 
 def generate_brownian(
-    n_steps:int, n_paths:int, volatility:float=0.2, dt:float=1 / 250, drift:float=0.0
+    n_steps: int,
+    n_paths: int,
+    volatility: float = 0.2,
+    dt: float = 1 / 250,
+    drift: float = 0.0,
 ) -> np.ndarray:
     """Generate Brownian motion.
 
@@ -33,7 +37,11 @@ def generate_brownian(
 
 
 def generate_geometric_brownian(
-    n_steps: int, n_paths: int, volatility:float=0.2, dt:float=1 / 250, drift:float=0.0
+    n_steps: int,
+    n_paths: int,
+    volatility: float = 0.2,
+    dt: float = 1 / 250,
+    drift: float = 0.0,
 ) -> np.ndarray:
     """Generate geometric Brownian motion.
 

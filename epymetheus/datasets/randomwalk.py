@@ -4,11 +4,11 @@ from epymetheus.stochastic import generate_geometric_brownian
 
 
 def make_randomwalk(
-    n_steps:int=1000,
-    n_assets:int=10,
-    volatility:float=0.2,
-    dt:float=1 / 250,
-    drift:float=0.0,
+    n_steps: int = 1000,
+    n_assets: int = 10,
+    volatility: float = 0.2,
+    dt: float = 1 / 250,
+    drift: float = 0.0,
     index=None,
     columns=None,
 ) -> pd.DataFrame:

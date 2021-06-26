@@ -18,8 +18,7 @@ def random_uniform(min_value=0, max_value=1, size=1):
 
 
 class RandomStrategy(Strategy):
-    """
-    Randomly yield trades.
+    """Randomly yield trades.
 
     Parameters
     ----------
@@ -32,14 +31,15 @@ class RandomStrategy(Strategy):
     min_lot : 1
         Minimum value of lots.
 
-    Examples
-    --------
-    >>> np.random.seed(42)
-    >>> from epymetheus.datasets import make_randomwalk
-    >>> strategy = RandomStrategy(n_trades=2)
-    >>> universe = make_randomwalk(10, 3)
-    >>> strategy(universe)
-    [trade(['2'], lot=[1.], entry=1, exit=8), trade(['1'], lot=[1.], entry=1, exit=4)]
+    Examples:
+
+        >>> from epymetheus.datasets import make_randomwalk
+        >>>
+        >>> np.random.seed(42)
+        >>> strategy = RandomStrategy(n_trades=2)
+        >>> universe = make_randomwalk(10, 3)
+        >>> strategy(universe)
+        [trade([2], lot=[1.], entry=2, exit=7), trade([1], lot=[1.], entry=1, exit=7)]
     """
 
     def __init__(self, n_trades=10, max_n_assets=1, max_lot=1.0, min_lot=1.0):

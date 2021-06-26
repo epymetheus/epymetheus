@@ -260,11 +260,11 @@ class TestStrategy:
     def test_score(self, metric):
         np.random.seed(42)
         universe = make_randomwalk()
-        strategy = RandomStrategy().run(universe)
+        strategy = RandomStrategy(n_trades=1000).run(universe)
         result = strategy.score(metric.__name__)
         expected = metric(strategy.trades, universe)
 
-        assert result == expected
+        np.testing.assert_allclose(result, expected, equal_nan=True)
 
     @pytest.mark.parametrize("metric", metrics)
     def test_score_notrunerror(self, metric):

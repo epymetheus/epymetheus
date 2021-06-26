@@ -27,7 +27,7 @@ class TestFinalWealth:
         result = final_wealth(strategy.trades, universe)
         expected = strategy.wealth().iat[-1]
 
-        assert result == expected
+        np.testing.assert_allclose(result, expected)
 
 
 class TestNumWin:

@@ -2,16 +2,16 @@ import numpy as np
 
 
 def generate_brownian(
-    n_steps, n_paths, volatility=0.2, dt=1 / 250, drift=0.0
+    n_steps:int, n_paths:int, volatility:float=0.2, dt:float=1 / 250, drift:float=0.0
 ) -> np.ndarray:
     """Generate Brownian motion.
 
     Args:
-        n_steps (int):
-        n_paths (int):
-        volatility (float, default=0.2):
-        dt (float, default=1/250):
-        drift (float, default=0.0):
+        n_steps (int): Number of time steps.
+        n_paths (int): Number of simulated paths.
+        volatility (float, default=0.2): Volatility of the motion.
+        dt (float, default=1/250): Intervals of time steps.
+        drift (float, default=0.0): Drift of the motion.
 
     Examples:
 
@@ -33,16 +33,16 @@ def generate_brownian(
 
 
 def generate_geometric_brownian(
-    n_steps, n_paths, volatility=0.2, dt=1 / 250, drift=0.0
+    n_steps: int, n_paths: int, volatility:float=0.2, dt:float=1 / 250, drift:float=0.0
 ) -> np.ndarray:
     """Generate geometric Brownian motion.
 
     Args:
-        n_steps (int):
-        n_paths (int):
-        volatility (float):
-        dt (float, default=1.0):
-        drift (float, default=0.0):
+        n_steps (int): Number of time steps.
+        n_paths (int): Number of simulated paths.
+        volatility (float, default=0.2): Volatility of the motion.
+        dt (float, default=1/250): Intervals of time steps.
+        drift (float, default=0.0): Drift of the motion.
 
     Examples:
 

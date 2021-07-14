@@ -4,11 +4,11 @@ from epymetheus.stochastic import generate_geometric_brownian
 
 
 def make_randomwalk(
-    n_steps=1000,
-    n_assets=10,
-    volatility=0.2,
-    dt=1 / 250,
-    drift=0.0,
+    n_steps: int = 1000,
+    n_assets: int = 10,
+    volatility: float = 0.2,
+    dt: float = 1 / 250,
+    drift: float = 0.0,
     index=None,
     columns=None,
 ) -> pd.DataFrame:
@@ -19,9 +19,9 @@ def make_randomwalk(
     Args:
         n_steps (int, default 1000): Number of time steps.
         n_assets (int, default 10): Number of assets.
-        volatility (float, default=0.2):
-        dt (float, default=1/250)
-        drift (float, default=0.0):
+        volatility (float, default=0.2): Volatility of the motion.
+        dt (float, default=1/250): Intervals of time steps.
+        drift (float, default=0.0): Drift of the motion.
         index (pandas.Index or array-like, optional): Index to use
             for resulting frame.
             Will default to `RangeIndex` if no index labels are provided.

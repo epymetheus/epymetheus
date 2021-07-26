@@ -209,7 +209,7 @@ class Trade:
             ...     "A0": [1, 2, 3, 4, 5],
             ...     "A1": [2, 3, 4, 5, 6],
             ...     "A2": [3, 4, 5, 6, 7],
-            ... }, dtype=float)
+            ... })
             >>> t = ep.trade(["A0", "A2"], entry=1, exit=3)
             >>> t = t.execute(universe)
             >>> t.final_pnl(universe)
@@ -226,6 +226,106 @@ class Trade:
         final_pnl = pnl[-1]
 
         return final_pnl
+
+    def exposure(self, universe: pd.DataFrame) -> pd.DataFrame:
+        """Return exposure of self to each asset.
+
+        Args:
+            universe (pandas.DataFrame): DataFrame of prices.
+
+        Returns:
+            pandas.DataFrame: DataFrame of exposure.
+
+        Examples:
+
+            >>> import pandas as pd
+            >>> import epymetheus as ep
+            ...
+            >>> universe = pd.DataFrame({
+            ...     "A0": [1, 2, 3, 4, 5],
+            ...     "A1": [2, 3, 4, 5, 6],
+            ...     "A2": [3, 4, 5, 6, 7],
+            ... })
+            >>> t = [1, -1] * ep.trade(["A0", "A2"], entry=1, exit=3).execute(universe)
+            >>> t.exposure(universe)
+                A0   A1   A2
+            0  0.0  0.0  0.0
+            1  0.0  0.0  0.0
+            2  3.0  0.0 -5.0
+            3  4.0  0.0 -6.0
+            4  0.0  0.0  0.0
+        """
+        exposure = pd.DataFrame(0.0, index=universe.index, columns=universe.columns)
+        exposure.loc[:, self.asset] = universe.loc[:, self.asset] * self.lot
+        i_entry = universe.index.get_indexer([self.entry]).item()
+        i_close = universe.index.get_indexer([self.close]).item()
+        exposure[: min(i_entry + 1, exposure.shape[0])] = 0
+        exposure[min(i_close + 1, exposure.shape[0]) :] = 0
+        return exposure
+
+    def net_exposure(self, universe: pd.DataFrame) -> pd.Series:
+        """Returns net exposure of self.
+
+        Args:
+            universe (pandas.DataFrame): Universe.
+
+        Returns:
+            pandas.Series
+
+        Examples:
+
+            >>> import pandas as pd
+            >>> import epymetheus as ep
+            ...
+            >>> universe = pd.DataFrame({
+            ...     "A0": [1, 2, 3, 4, 5],
+            ...     "A1": [2, 3, 4, 5, 6],
+            ...     "A2": [3, 4, 5, 6, 7],
+            ... })
+            >>> t = [1, -1] * ep.trade(["A0", "A2"], entry=1, exit=3).execute(universe)
+            >>> t
+            trade(['A0' 'A2'], lot=[ 1. -1.], entry=1, exit=3)
+            >>> t.net_exposure(universe)
+            0    0.0
+            1    0.0
+            2   -2.0
+            3   -2.0
+            4    0.0
+            dtype: float64
+        """
+        return self.exposure(universe).sum(1)
+
+    def abs_exposure(self, universe: pd.DataFrame) -> pd.Series:
+        """Returns net exposure of self.
+
+        Args:
+            universe (pandas.DataFrame): Universe.
+
+        Returns:
+            pandas.Series
+
+        Examples:
+
+            >>> import pandas as pd
+            >>> import epymetheus as ep
+            ...
+            >>> universe = pd.DataFrame({
+            ...     "A0": [1, 2, 3, 4, 5],
+            ...     "A1": [2, 3, 4, 5, 6],
+            ...     "A2": [3, 4, 5, 6, 7],
+            ... })
+            >>> t = [1, -1] * ep.trade(["A0", "A2"], entry=1, exit=3).execute(universe)
+            >>> t
+            trade(['A0' 'A2'], lot=[ 1. -1.], entry=1, exit=3)
+            >>> t.abs_exposure(universe)
+            0     0.0
+            1     0.0
+            2     8.0
+            3    10.0
+            4     0.0
+            dtype: float64
+        """
+        return self.exposure(universe).abs().sum(1)
 
     @classmethod
     def load_history(cls, history: pd.DataFrame):

@@ -92,6 +92,38 @@ class TestTrade:
         expect = expect[:, [1, 0]]
         assert np.allclose(result, expect)
 
+    def test_exposure(self):
+        universe = pd.DataFrame(
+            {"A0": [1, 2, 3, 4, 5], "A1": [2, 3, 4, 5, 6], "A2": [3, 4, 5, 6, 7]}
+        )
+        t = [1, -1] * trade(["A0", "A2"], entry=1, exit=3).execute(universe)
+        result = t.exposure(universe)
+        expect = pd.DataFrame(
+            [[0, 0, 0], [0, 0, 0], [3, 0, -5], [4, 0, -6], [0, 0, 0]],
+            index=universe.index,
+            columns=universe.columns,
+            dtype=float,
+        )
+        pd.testing.assert_frame_equal(result, expect)
+
+    def test_net_exposure(self):
+        universe = pd.DataFrame(
+            {"A0": [1, 2, 3, 4, 5], "A1": [2, 3, 4, 5, 6], "A2": [3, 4, 5, 6, 7]}
+        )
+        t = [1, -1] * trade(["A0", "A2"], entry=1, exit=3).execute(universe)
+        result = t.net_exposure(universe)
+        expect = pd.Series([0, 0, -2, -2, 0], dtype=float)
+        pd.testing.assert_series_equal(result, expect)
+
+    def test_abs_exposure(self):
+        universe = pd.DataFrame(
+            {"A0": [1, 2, 3, 4, 5], "A1": [2, 3, 4, 5, 6], "A2": [3, 4, 5, 6, 7]}
+        )
+        t = [1, -1] * trade(["A0", "A2"], entry=1, exit=3).execute(universe)
+        result = t.abs_exposure(universe)
+        expect = pd.Series([0, 0, 8, 10, 0], dtype=float)
+        pd.testing.assert_series_equal(result, expect)
+
     def test_array_value_value_zero(self):
         t = 0.0 * trade(["A", "B"], entry=1, exit=3)
         result = t.array_value(self.universe_hand)

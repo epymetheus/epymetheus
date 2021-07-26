@@ -24,23 +24,25 @@ def drawdown(trades, universe) -> np.array:
     return w - np.maximum.accumulate(w)
 
 
-def _exposure(trades, universe, net: bool):
-    exposure = np.zeros_like(universe.iloc[:, 0], dtype=float)
-    for t in trades:
-        i_entry = universe.index.get_indexer([t.entry]).item()
-        i_close = universe.index.get_indexer([t.close]).item()
-        value = t.array_value(universe).astype(exposure.dtype)
-        value[:i_entry] = 0
-        value[i_close + 1 :] = 0
-        value = value if net else np.abs(value)
-        exposure += value.sum(axis=1)
+# def _exposure(trades, universe, net: bool) -> np.ndarray:
+#     exposure = np.zeros_like(universe.iloc[:, 0], dtype=float)
+#     for t in trades:
+#         i_entry = universe.index.get_indexer([t.entry]).item()
+#         i_close = universe.index.get_indexer([t.close]).item()
+#         value = t.array_value(universe).astype(exposure.dtype)
+#         value[:i_entry] = 0
+#         value[i_close + 1 :] = 0
+#         value = value if net else np.abs(value)
+#         exposure += value.sum(axis=1)
 
-    return exposure
-
-
-def net_exposure(trades, universe) -> np.array:
-    return _exposure(trades, universe, net=True)
+#     return exposure
 
 
-def abs_exposure(trades, universe) -> np.array:
-    return _exposure(trades, universe, net=False)
+# def net_exposure(trades, universe) -> np.ndarray:
+#     """Returns net exposure of trades.
+#     """
+#     return _exposure(trades, universe, net=True)
+
+
+# def abs_exposure(trades, universe) -> np.ndarray:
+#     return _exposure(trades, universe, net=False)

@@ -233,6 +233,67 @@ class TestStrategy:
 
         pd.testing.assert_series_equal(wealth, expected, check_dtype=False)
 
+    def test_exposure(self):
+        universe = pd.DataFrame(
+            {
+                "A0": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "A1": [2.0, 3.0, 4.0, 5.0, 6.0],
+                "A2": [3.0, 4.0, 5.0, 6.0, 7.0],
+            },
+            dtype=float,
+        )
+        strategy = create_strategy(
+            lambda universe: [
+                [1, -1] * trade(["A0", "A2"], entry=1, exit=3),
+                [-1, 2] * trade(["A1", "A2"], entry=2, exit=4),
+            ]
+        ).run(universe, verbose=False)
+        result = strategy.exposure()
+        expect = pd.DataFrame(
+            [[0, 0, 0], [0, 0, 0], [3, 0, -5], [4, -5, 6], [0, -6, 14]],
+            index=universe.index,
+            columns=universe.columns,
+        )
+        pd.testing.assert_frame_equal(result, expect, check_dtype=False)
+
+    def test_net_exposure(self):
+        universe = pd.DataFrame(
+            {
+                "A0": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "A1": [2.0, 3.0, 4.0, 5.0, 6.0],
+                "A2": [3.0, 4.0, 5.0, 6.0, 7.0],
+            },
+            dtype=float,
+        )
+        strategy = create_strategy(
+            lambda universe: [
+                [1, -1] * trade(["A0", "A2"], entry=1, exit=3),
+                [-1, 2] * trade(["A1", "A2"], entry=2, exit=4),
+            ]
+        ).run(universe, verbose=False)
+        result = strategy.net_exposure()
+        expect = pd.Series([0, 0, -2, 5, 8], index=universe.index)
+        pd.testing.assert_series_equal(result, expect, check_dtype=False)
+
+    def test_abs_exposure(self):
+        universe = pd.DataFrame(
+            {
+                "A0": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "A1": [2.0, 3.0, 4.0, 5.0, 6.0],
+                "A2": [3.0, 4.0, 5.0, 6.0, 7.0],
+            },
+            dtype=float,
+        )
+        strategy = create_strategy(
+            lambda _: [
+                [1, -1] * trade(["A0", "A2"], entry=1, exit=3),
+                [-1, 2] * trade(["A1", "A2"], entry=2, exit=4),
+            ]
+        ).run(universe, verbose=False)
+        result = strategy.abs_exposure()
+        expect = pd.Series([0, 0, 8, 15, 20], index=universe.index)
+        pd.testing.assert_series_equal(result, expect, check_dtype=False)
+
     def test_ts(self):
         universe = make_randomwalk()
         strategy = RandomStrategy().run(universe)
@@ -240,8 +301,8 @@ class TestStrategy:
 
         assert_equal(strategy.wealth().values, ts.wealth(trades, universe))
         assert_equal(strategy.drawdown().values, ts.drawdown(trades, universe))
-        assert_equal(strategy.net_exposure().values, ts.net_exposure(trades, universe))
-        assert_equal(strategy.abs_exposure().values, ts.abs_exposure(trades, universe))
+        # assert_equal(strategy.net_exposure().values, ts.net_exposure(trades, universe))
+        # assert_equal(strategy.abs_exposure().values, ts.abs_exposure(trades, universe))
 
     def test_notrunerror(self):
         strategy = RandomStrategy()

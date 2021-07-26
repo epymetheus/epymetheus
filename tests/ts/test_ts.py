@@ -16,33 +16,33 @@ class TestAbsExposure:
     def setup(self):
         np.random.seed(42)
 
-    def test_zero(self):
-        """
-        result = 0 if trade is zero
-        """
-        universe = make_randomwalk()
-        strategy = RandomStrategy(min_lot=0, max_lot=0).run(universe)
+    # def test_zero(self):
+    #     """
+    #     result = 0 if trade is zero
+    #     """
+    #     universe = make_randomwalk()
+    #     strategy = RandomStrategy(min_lot=0, max_lot=0).run(universe)
 
-        result = ts.abs_exposure(strategy.trades, universe)
-        expected = np.zeros_like(result)
+    #     result = ts.abs_exposure(strategy.trades, universe)
+    #     expected = np.zeros_like(result)
 
-        assert_equal(result, expected)
+    #     assert_equal(result, expected)
 
-    def test_handmade(self):
-        universe = pd.DataFrame(
-            {
-                "A": [3.0, 1.0, 4.0, 1.0, 5.0, 9.0, 2.0],
-                "B": [2.0, 7.0, 1.0, 8.0, 1.0, 8.0, 1.0],
-            }
-        )
-        trades = [
-            2 * trade("A", entry=1, exit=5).execute(universe),
-            -3 * trade("B", entry=2, exit=4).execute(universe),
-        ]
-        result = ts.abs_exposure(trades, universe)
-        expected = np.array([0.0, 2.0, 11.0, 26.0, 13.0, 18.0, 0.0])
+    # def test_handmade(self):
+    #     universe = pd.DataFrame(
+    #         {
+    #             "A": [3.0, 1.0, 4.0, 1.0, 5.0, 9.0, 2.0],
+    #             "B": [2.0, 7.0, 1.0, 8.0, 1.0, 8.0, 1.0],
+    #         }
+    #     )
+    #     trades = [
+    #         2 * trade("A", entry=1, exit=5).execute(universe),
+    #         -3 * trade("B", entry=2, exit=4).execute(universe),
+    #     ]
+    #     result = ts.abs_exposure(trades, universe)
+    #     expected = np.array([0.0, 2.0, 11.0, 26.0, 13.0, 18.0, 0.0])
 
-        assert_equal(result, expected)
+    #     assert_equal(result, expected)
 
 
 class TestDrawdown:
@@ -89,55 +89,55 @@ class TestNetExposure:
     def setup(self):
         np.random.seed(42)
 
-    def test_zero(self):
-        """
-        result = 0 if trade is zero
-        """
-        universe = make_randomwalk()
-        strategy = RandomStrategy(min_lot=0, max_lot=0).run(universe)
+    # def test_zero(self):
+    #     """
+    #     result = 0 if trade is zero
+    #     """
+    #     universe = make_randomwalk()
+    #     strategy = RandomStrategy(min_lot=0, max_lot=0).run(universe)
 
-        result = ts.net_exposure(strategy.trades, universe)
-        expected = np.zeros_like(result)
+    #     result = ts.net_exposure(strategy.trades, universe)
+    #     expected = np.zeros_like(result)
 
-        assert_equal(result, expected)
+    #     assert_equal(result, expected)
 
-    def test_linearity_add(self):
-        universe = make_randomwalk()
-        s0 = RandomStrategy().run(universe)
-        s1 = RandomStrategy().run(universe)
+    # def test_linearity_add(self):
+    #     universe = make_randomwalk()
+    #     s0 = RandomStrategy().run(universe)
+    #     s1 = RandomStrategy().run(universe)
 
-        result = ts.net_exposure(s0.trades, universe) + ts.net_exposure(
-            s1.trades, universe
-        )
-        expected = ts.net_exposure(s0.trades + s1.trades, universe)
+    #     result = ts.net_exposure(s0.trades, universe) + ts.net_exposure(
+    #         s1.trades, universe
+    #     )
+    #     expected = ts.net_exposure(s0.trades + s1.trades, universe)
 
-        assert_allclose(result, expected)
+    #     assert_allclose(result, expected)
 
-    @pytest.mark.parametrize("a", [2.0, -1.0])
-    def test_linearity_mul(self, a):
-        universe = make_randomwalk()
-        strategy = RandomStrategy().run(universe)
+    # @pytest.mark.parametrize("a", [2.0, -1.0])
+    # def test_linearity_mul(self, a):
+    #     universe = make_randomwalk()
+    #     strategy = RandomStrategy().run(universe)
 
-        result = a * ts.net_exposure(strategy.trades, universe)
-        expected = ts.net_exposure([a * t for t in strategy.trades], universe)
+    #     result = a * ts.net_exposure(strategy.trades, universe)
+    #     expected = ts.net_exposure([a * t for t in strategy.trades], universe)
 
-        assert_allclose(result, expected)
+    #     assert_allclose(result, expected)
 
-    def test_handmade(self):
-        universe = pd.DataFrame(
-            {
-                "A": [3.0, 1.0, 4.0, 1.0, 5.0, 9.0, 2.0],
-                "B": [2.0, 7.0, 1.0, 8.0, 1.0, 8.0, 1.0],
-            }
-        )
-        trades = [
-            2 * trade("A", entry=1, exit=5).execute(universe),
-            -3 * trade("B", entry=2, exit=4).execute(universe),
-        ]
-        result = ts.net_exposure(trades, universe)
-        expected = np.array([0.0, 2.0, 5.0, -22.0, 7.0, 18.0, 0.0])
+    # def test_handmade(self):
+    #     universe = pd.DataFrame(
+    #         {
+    #             "A": [3.0, 1.0, 4.0, 1.0, 5.0, 9.0, 2.0],
+    #             "B": [2.0, 7.0, 1.0, 8.0, 1.0, 8.0, 1.0],
+    #         }
+    #     )
+    #     trades = [
+    #         2 * trade("A", entry=1, exit=5).execute(universe),
+    #         -3 * trade("B", entry=2, exit=4).execute(universe),
+    #     ]
+    #     result = ts.net_exposure(trades, universe)
+    #     expected = np.array([0.0, 2.0, 5.0, -22.0, 7.0, 18.0, 0.0])
 
-        assert_equal(result, expected)
+    #     assert_equal(result, expected)
 
 
 class TestWealth:

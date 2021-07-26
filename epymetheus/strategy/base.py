@@ -314,21 +314,112 @@ class Strategy(abc.ABC):
 
         return pd.Series(drawdown, index=self.universe.index)
 
-    def net_exposure(self) -> pd.Series:
+    def exposure(self) -> pd.DataFrame:
+        """Return exposure of self to each asset.
+
+        Returns:
+            pandas.DataFrame: DataFrame of exposure.
+
+        Examples:
+
+            >>> import pandas as pd
+            >>> import epymetheus as ep
+            ...
+            >>> universe = pd.DataFrame({
+            ...     "A0": [1, 2, 3, 4, 5],
+            ...     "A1": [2, 3, 4, 5, 6],
+            ...     "A2": [3, 4, 5, 6, 7],
+            ... })
+            >>> strategy = ep.create_strategy(lambda universe: [
+            ...     [1, -1] * ep.trade(["A0", "A2"], entry=1, exit=3),
+            ...     [-1, 2] * ep.trade(["A1", "A2"], entry=2, exit=4),
+            ... ]).run(universe, verbose=False)
+            >>> strategy.exposure()
+                A0   A1    A2
+            0  0.0  0.0   0.0
+            1  0.0  0.0   0.0
+            2  3.0  0.0  -5.0
+            3  4.0 -5.0   6.0
+            4  0.0 -6.0  14.0
+        """
         if not hasattr(self, "trades"):
             raise NotRunError("Strategy has not been run")
 
-        exposure = ts.net_exposure(self.trades, self.universe)
+        return sum(map(lambda t: t.exposure(self.universe), self.trades))
 
-        return pd.Series(exposure, index=self.universe.index)
+    def net_exposure(self) -> pd.Series:
+        """Return net exposure of the strategy.
+
+        Returns:
+            pandas.Series
+
+        Examples:
+
+            >>> import pandas as pd
+            >>> import epymetheus as ep
+            ...
+            >>> universe = pd.DataFrame({
+            ...     "A0": [1.0, 2.0, 3.0, 4.0, 5.0],
+            ...     "A1": [2.0, 3.0, 4.0, 5.0, 6.0],
+            ...     "A2": [3.0, 4.0, 5.0, 6.0, 7.0],
+            ... }, dtype=float)
+            >>> strategy = ep.create_strategy(lambda universe: [
+            ...     [1, -1] * ep.trade(["A0", "A2"], entry=1, exit=3),
+            ...     [-1, 2] * ep.trade(["A1", "A2"], entry=2, exit=4),
+            ... ]).run(universe, verbose=False)
+            >>> strategy.exposure()
+                A0   A1    A2
+            0  0.0  0.0   0.0
+            1  0.0  0.0   0.0
+            2  3.0  0.0  -5.0
+            3  4.0 -5.0   6.0
+            4  0.0 -6.0  14.0
+            >>> strategy.net_exposure()
+            0    0.0
+            1    0.0
+            2   -2.0
+            3    5.0
+            4    8.0
+            dtype: float64
+        """
+        return self.exposure().sum(1)
 
     def abs_exposure(self) -> pd.Series:
-        if not hasattr(self, "trades"):
-            raise NotRunError("Strategy has not been run")
+        """Return absolute exposure of the strategy.
 
-        exposure = ts.abs_exposure(self.trades, self.universe)
+        Returns:
+            pandas.Series
 
-        return pd.Series(exposure, index=self.universe.index)
+        Examples:
+
+            >>> import pandas as pd
+            >>> import epymetheus as ep
+            ...
+            >>> universe = pd.DataFrame({
+            ...     "A0": [1.0, 2.0, 3.0, 4.0, 5.0],
+            ...     "A1": [2.0, 3.0, 4.0, 5.0, 6.0],
+            ...     "A2": [3.0, 4.0, 5.0, 6.0, 7.0],
+            ... }, dtype=float)
+            >>> strategy = ep.create_strategy(lambda universe: [
+            ...     [1, -1] * ep.trade(["A0", "A2"], entry=1, exit=3),
+            ...     [-1, 2] * ep.trade(["A1", "A2"], entry=2, exit=4),
+            ... ]).run(universe, verbose=False)
+            >>> strategy.exposure()
+                A0   A1    A2
+            0  0.0  0.0   0.0
+            1  0.0  0.0   0.0
+            2  3.0  0.0  -5.0
+            3  4.0 -5.0   6.0
+            4  0.0 -6.0  14.0
+            >>> strategy.abs_exposure()
+            0     0.0
+            1     0.0
+            2     8.0
+            3    15.0
+            4    20.0
+            dtype: float64
+        """
+        return self.exposure().abs().sum(1)
 
     def get_params(self) -> dict:
         """Set the parameters of this strategy.

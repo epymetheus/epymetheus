@@ -391,7 +391,12 @@ class Strategy(abc.ABC):
         if not hasattr(self, "trades"):
             raise NotRunError("Strategy has not been run")
 
-        return sum(map(lambda t: t.exposure(self.universe), self.trades))
+        dict_exposure = {k: 0.0 for k in self.universe.columns}
+        for d in map(lambda t: t.dict_exposure(self.universe), self.trades):
+            for key in d:
+                dict_exposure[key] += d[key]
+
+        return pd.DataFrame(dict_exposure, index=self.universe.index)
 
     def net_exposure(self) -> pd.Series:
         """Return net exposure of the strategy.

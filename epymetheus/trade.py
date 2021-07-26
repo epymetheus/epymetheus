@@ -1,5 +1,6 @@
 import json
 from copy import deepcopy
+from typing import Dict
 
 import numpy as np
 import pandas as pd
@@ -227,6 +228,39 @@ class Trade:
 
         return final_pnl
 
+    def dict_exposure(self, universe: pd.DataFrame) -> Dict[object, np.ndarray]:
+        """Return
+
+        Args:
+            universe (pandas.DataFrame): DataFrame of prices.
+
+        Returns:
+            pandas.DataFrame: DataFrame of exposure.
+
+        Examples:
+
+            >>> import pandas as pd
+            >>> import epymetheus as ep
+            ...
+            >>> universe = pd.DataFrame({
+            ...     "A0": [1, 2, 3, 4, 5],
+            ...     "A1": [2, 3, 4, 5, 6],
+            ...     "A2": [3, 4, 5, 6, 7],
+            ... })
+            >>> t = [1, -1] * ep.trade(["A0", "A2"], entry=1, exit=3).execute(universe)
+            >>> t.dict_exposure(universe)
+            {'A0': array([0., 0., 3., 4., 0.]), 'A2': array([ 0.,  0., -5., -6.,  0.])}
+        """
+        dict_exposure = {
+            asset: lot * universe.loc[:, asset].values
+            for asset, lot in zip(self.asset, self.lot)
+        }
+        i_entry, i_close = universe.index.get_indexer([self.entry, self.close])
+        for key in dict_exposure:
+            dict_exposure[key][: min(i_entry + 1, dict_exposure[key].shape[0])] = 0
+            dict_exposure[key][min(i_close + 1, dict_exposure[key].shape[0]) :] = 0
+        return dict_exposure
+
     def exposure(self, universe: pd.DataFrame) -> pd.DataFrame:
         """Return exposure of self to each asset.
 
@@ -257,8 +291,7 @@ class Trade:
         """
         exposure = pd.DataFrame(0.0, index=universe.index, columns=universe.columns)
         exposure.loc[:, self.asset] = universe.loc[:, self.asset] * self.lot
-        i_entry = universe.index.get_indexer([self.entry]).item()
-        i_close = universe.index.get_indexer([self.close]).item()
+        i_entry, i_close = universe.index.get_indexer([self.entry, self.close])
         exposure[: min(i_entry + 1, exposure.shape[0])] = 0
         exposure[min(i_close + 1, exposure.shape[0]) :] = 0
         return exposure

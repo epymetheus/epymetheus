@@ -67,7 +67,7 @@ def generate_geometric_brownian(
         n_paths=n_paths,
         volatility=volatility,
         dt=dt,
-        drift=drift - (volatility ** 2 / 2),
+        drift=drift - (volatility**2 / 2),
     )
 
     return np.exp(w)
